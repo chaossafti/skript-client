@@ -1,3 +1,13 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://maven.fabricmc.net/' }
+        gradlePluginPortal()
+    }
+}
+
+
+
 rootProject.name = 'skript-client'
 include 'commons'
+include 'fabric'
 
