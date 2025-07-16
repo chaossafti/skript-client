@@ -4,19 +4,16 @@ plugins {
 
 }
 
-group = 'io.papermc.paper'
-version = '1.0-SNAPSHOT'
+allprojects {
+    group = 'de.safti.skriptclient'
+    version = '1.0-SNAPSHOT'
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-
-    shadow fileTree(dir: 'libs', include: '*.jar')
-
 }
 
 test {
