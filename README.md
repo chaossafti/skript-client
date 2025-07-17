@@ -1,5 +1,5 @@
 # Skript-Client
-This project is a fork of the original Skript plugin, reimagined as a client-side mod for Minecraft.
+This project uses the Skript-Parser to let you modify your client as you please in plain english!
 
 ## WIP (Work In Progress)
 
