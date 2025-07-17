@@ -1,5 +1,6 @@
 package de.safti.skriptclient.fabric;
 
+import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.Skriptclient;
 import net.fabricmc.api.ModInitializer;
 
@@ -11,6 +12,6 @@ public final class SkriptclientFabric implements ModInitializer {
         // Proceed with mild caution.
 
         // Run our common setup.
-        Skriptclient.init();
+        SkriptClient.init();
     }
 }

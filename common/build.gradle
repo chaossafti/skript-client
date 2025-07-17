@@ -10,5 +10,5 @@ dependencies {
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-    implementation 'org.reflections:reflections:0.10.2'
+    implementation fileTree("$rootDir/libs/")
 }

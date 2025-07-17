@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SkriptClient {
+	public static final String MOD_ID = "skript-client";
+	
 	private static final Logger log = LoggerFactory.getLogger(SkriptClient.class);
 	public static boolean IS_INITIALIZED = false;
 	public static Core core;
