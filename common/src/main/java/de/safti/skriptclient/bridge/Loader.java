@@ -16,5 +16,11 @@ public enum Loader {
 		this.isImplemented = isImplemented;
 	}
 	
+	public boolean isImplemented() {
+		return isImplemented;
+	}
 	
+	public boolean isSupported() {
+		return isSupported;
+	}
 }
