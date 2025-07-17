@@ -1,27 +1,34 @@
 {
   "schemaVersion": 1,
-  "id": "skript-client",
+  "id": "skriptclient",
   "version": "${version}",
-
   "name": "Skript Client",
   "description": "",
-  "authors": [],
-  "contact": {},
-
+  "authors": [""],
+  "contact": {
+    "homepage": ""  },
   "license": "All-Rights-Reserved",
-  "icon": "assets/skript-client/icon.png",
-
-  "environment": "client",
+  "icon": "assets/skriptclient/icon.png",
+  "environment": "*",
   "entrypoints": {
-    "fabric-datagen": ["de.safti.skriptclient.client.SkriptClientModDataGenerator"],
-    "client": ["de.safti.skriptclient.client.SkriptClientModClient"],
-    "main": ["de.safti.skriptclient.SkriptClientMod"]
+    "main": [
+      "de.safti.skriptclient.fabric.SkriptclientFabric"
+    ],
+    "client": [
+      "de.safti.skriptclient.fabric.client.SkriptclientFabricClient"
+    ]
   },
-
-
+  "mixins": [
+    "skriptclient.mixins.json"
+  ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
-    "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21",
+    "java": ">=21"
+    ,"architectury": ">=13.0.8"
+    ,"fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
   }
 }
