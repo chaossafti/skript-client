@@ -2,7 +2,7 @@ package de.safti.skriptclient.bridge;
 
 public enum Loader {
 	FABRIC(true, true),
-	FORGE(true, false),
+	FORGE(false, false),
 	NEO_FORGE(true, false),
 	QUILT(true, false),
 	OTHER(false, false);
