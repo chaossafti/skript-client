@@ -36,7 +36,8 @@ public interface Core {
 		return p;
 	}
 	
-	
+	@NotNull
+	String[] getSubPackagesToLoad();
 	
 	@NotNull
 	String getModVersionString();
