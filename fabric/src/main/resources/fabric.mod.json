@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "skriptclient",
+  "id": "skript-client",
   "version": "${version}",
   "name": "Skript Client",
   "description": "",

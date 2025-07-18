@@ -28,6 +28,12 @@ public class FabricCore implements Core {
 	}
 	
 	@Override
+	public @NotNull String[] getSubPackagesToLoad() {
+		// the skript parser adds expressions, effects etc. packages by default; we don't have to add duplicates.
+		return new String[] {};
+	}
+	
+	@Override
 	public @NotNull String getModVersionString() {
 		return metadata.getVersion().getFriendlyString();
 	}

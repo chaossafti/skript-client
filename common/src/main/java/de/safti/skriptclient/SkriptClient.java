@@ -34,6 +34,7 @@ public class SkriptClient {
 	
 	@SuppressWarnings("LoggingSimilarMessage")
 	public static void init(Core core) {
+		System.out.println("SkriptClient.init");
 		if(IS_INITIALIZED)
 			throw new IllegalStateException("SkriptClient already initialized!");
 		

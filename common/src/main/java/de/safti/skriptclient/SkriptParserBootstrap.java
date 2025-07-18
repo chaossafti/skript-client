@@ -39,28 +39,14 @@ public class SkriptParserBootstrap {
 	}
 	
 	public static void initSkript(Core core) {
+		System.out.println("SkriptParserBootstrap.initSkript");
 		// first step is to init the skript parser
 		initParser(core);
 		
 		// before loading all scripts or mixins, make sure that all required syntaxes have been implemented
 		Set<Class<? extends SyntaxElement>> missingSyntaxes = getNotImplementedSyntaxes(core);
 		if(!missingSyntaxes.isEmpty()) {
-			core.getClient().showErrorToast( "Skript-Client Error", "Please check the logs for more information.", Duration.ofSeconds(10));
-			
-			log.error("Skript-Client has detected some Syntaxes to not be implemented.");
-			log.error("Here is a full list of Syntaxes: ");
-			for (Class<? extends SyntaxElement> missingSyntax : missingSyntaxes) {
-				log.error("  - {}", missingSyntax.getName());
-			}
-			
-			log.error("---------------------------------------------------------");
-			log.error("Some syntaxes have not been implemented! This is a Skript-Client Bug.");
-			log.error("Please report this at the Github Issue tracker at https://github.com/chaossafti/skript-client/issues");
-			log.error("mod version: {} ({}); minecraft version: {}", core.getModVersionString(), core.getLoader(), core.getMinecraftVersionString());
-			log.error("---------------------------------------------------------");
-			
-			log.error("Skript-client will continue working, but some Syntaxes might not work.");
-			
+			core.getClient().runOnStartup(() -> logMissingDependencies(core, missingSyntaxes));
 			
 		}
 		
@@ -83,6 +69,27 @@ public class SkriptParserBootstrap {
 		// log the info;
 		// currently this only logs to console, but a custom screen will be implemented sometime.
 		ConsoleLogRecipient.INSTANCE.send(logs);
+	}
+	
+	private static void logMissingDependencies(Core core, Set<Class<? extends SyntaxElement>> missingSyntaxes) {
+		core.getClient().showErrorToast( "Skript-Client Error", "Please check the logs for more information.", Duration.ofSeconds(10));
+		
+		// fixme: log.error doesn't log to console (?)
+		// tested with fabric
+		System.out.println("e");
+		log.error("Skript-Client has detected some Syntaxes to not be implemented.");
+		log.error("Here is a full list of Syntaxes: ");
+		for (Class<? extends SyntaxElement> missingSyntax : missingSyntaxes) {
+			log.error("  - {}", missingSyntax.getName());
+		}
+		
+		log.error("---------------------------------------------------------");
+		log.error("Some syntaxes have not been implemented! This is a Skript-Client Bug.");
+		log.error("Please report this at the Github Issue tracker at https://github.com/chaossafti/skript-client/issues");
+		log.error("mod version: {} ({}); minecraft version: {}", core.getModVersionString(), core.getLoader(), core.getMinecraftVersionString());
+		log.error("---------------------------------------------------------");
+		
+		log.error("Skript-client will continue working, but some Syntaxes might not work.");
 	}
 	
 	private static void initParser(@NotNull Core core) {
@@ -175,7 +182,7 @@ public class SkriptParserBootstrap {
 						.collect(Collectors.toSet());
 		
 		Set<Class<? extends SyntaxElement>> missing = new HashSet<>();
-		for (Class<? extends Expression<?>> requiredClass : classes) {
+		for (var requiredClass : classes) {
 			if(!registeredClasses.contains(requiredClass)) {
 				missing.add(requiredClass);
 			}

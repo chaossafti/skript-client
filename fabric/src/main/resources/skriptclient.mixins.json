@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "package": "de.safti.skriptclient.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+  ]
+}

@@ -1,5 +1,5 @@
 plugins {
-    id 'dev.architectury.loom' version '1.10-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.10.432' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
 }
@@ -29,12 +29,20 @@ subprojects {
         // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
         // See https://docs.gradle.org/current/userguide/declaring_repositories.html
         // for more information about repositories.
+
     }
 
     dependencies {
+        // minecraft and mappings
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
-        implementation fileTree("$rootDir/libs/")
+
+
+        // custom dependencies
+        // fixme: somehow shade the skript-parser jar into every mod file when building
+        modImplementation fileTree(dir: "$rootDir/libs", include: ["*.jar"])
+        modInclude fileTree(dir: "$rootDir/libs", include: ["*.jar"])
+
     }
 
     java {
