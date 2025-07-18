@@ -3,24 +3,40 @@ package de.safti.skriptclient.bridge;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public interface Core {
 	
 	@NotNull
-	File getSkriptClientFolder();
+	Path getSkriptClientFolder();
 	
 	@NotNull
-	default File getScriptsFolder() {
-		File f = new File(getSkriptClientFolder(), "scripts");
-		if(f.exists()) {
-			f.mkdirs();
+	default Path getScriptsFolder() {
+		Path p = getSkriptClientFolder().resolve("scripts");
+		if(!p.toFile().exists()) {
+			p.toFile().mkdirs();
 		}
 		
-		return f;
+		return p;
 	}
 	
-	@NotNull
-	void initSkript();
+	default Path getConfig() {
+		Path p = getSkriptClientFolder().resolve("scripts");
+		if(!p.toFile().exists()) {
+			try {
+				// TODO: load default configs once configs are made
+				p.toFile().createNewFile();
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		return p;
+	}
+	
+	
 	
 	@NotNull
 	String getModVersionString();

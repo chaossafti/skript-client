@@ -1,32 +1,40 @@
 package de.safti.skriptclient.fabric;
 
+import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.bridge.ClientWrapper;
 import de.safti.skriptclient.bridge.Core;
 import de.safti.skriptclient.bridge.Loader;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.nio.charset.CoderResult;
+import java.nio.file.Path;
 
 public class FabricCore implements Core {
-	@Override
-	public @NotNull File getSkriptClientFolder() {
-		return null;
+	private final ModMetadata metadata;
+	
+	
+	public FabricCore() {
+		this.metadata = FabricLoader.getInstance()
+				.getModContainer(SkriptClient.MOD_ID)
+				.orElseThrow()
+				.getMetadata();
 	}
 	
 	@Override
-	public void initSkript() {
-	
+	public @NotNull Path getSkriptClientFolder() {
+		return FabricLoader.getInstance().getConfigDir().resolve(SkriptClient.MOD_ID);
 	}
 	
 	@Override
 	public @NotNull String getModVersionString() {
-		return "";
+		return metadata.getVersion().getFriendlyString();
 	}
 	
 	@Override
 	public @NotNull String getMinecraftVersionString() {
-		return "";
+		return Minecraft.getInstance().getLaunchedVersion();
 	}
 	
 	@Override
@@ -36,6 +44,6 @@ public class FabricCore implements Core {
 	
 	@Override
 	public @NotNull ClientWrapper getClient() {
-		return null;
+		return FabricClientWrapper.INSTANCE;
 	}
 }

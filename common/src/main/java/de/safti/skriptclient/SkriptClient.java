@@ -86,7 +86,6 @@ public class SkriptClient {
 		}
 		
 		// load skript aswell as all scripts inside the scripts folder
-		core.initSkript();
 		
 		try {
 			loadScripts();
@@ -100,7 +99,7 @@ public class SkriptClient {
 	
 	public static void loadScripts() throws IOException {
 		//noinspection resource
-		Files.walk(core.getSkriptClientFolder().toPath())
+		Files.walk(core.getSkriptClientFolder())
 				.filter(path -> path.toFile().getName().endsWith(".sk"))
 				.forEach(path -> ScriptLoader.loadScript(path, false));
 	}

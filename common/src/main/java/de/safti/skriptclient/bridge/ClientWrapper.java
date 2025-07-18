@@ -4,6 +4,6 @@ import java.time.Duration;
 
 public interface ClientWrapper {
 	
-	void showErrorToast(String message, Duration duration);
+	void showErrorToast(String title, String message, Duration duration);
 	
 }
