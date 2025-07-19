@@ -16,22 +16,18 @@ import java.util.List;
 
 public abstract class AbstractEffect extends Effect {
 	private final RuntimeLogger runtimeLogger = new RuntimeLogger();
+	private Expression<?>[] parsedExpressions;
 	
 	@Override
 	public final boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
 		SkriptLogger logger = parseContext.getLogger();
 		List<PatternArgument<?>> patternArguments = getPattern().patternArguments();
+		parsedExpressions = expressions;
 		
 		if(expressions.length != patternArguments.size()) {
 			logger.error("Provided expression list unequal argument list; This is a Skript client error. Please report it to the Github issue tracker!", ErrorType.EXCEPTION);
 			// TODO: better logging of this? it most likely wont happen anyway
 			return false;
-		}
-		
-		// init the pattern's argument's expressions
-		for (int i = 0, expressionsLength = expressions.length; i < expressionsLength; i++) {
-			Expression<?> expression = expressions[i];
-			setArgumentExpression(i, expression);
 		}
 		
 		return validate(matchedPattern, parseContext);
@@ -54,11 +50,10 @@ public abstract class AbstractEffect extends Effect {
 	
 	protected abstract void execute(@NotNull TriggerContext context, RuntimeLogger runtimeLogger);
 	
-	private <T> void setArgumentExpression(int index, Expression<T> expression) {
-		//noinspection unchecked
-		PatternArgument<T> patternArgument = (PatternArgument<T>) getPattern().patternArguments().get(index);
-		patternArgument.setExpression(expression);
-		
+	@SuppressWarnings("unchecked")
+	protected <A extends PatternArgument<T>, T> PatternArgument<T> getArgument(int index) {
+		Expression<T> expression = (Expression<T>) parsedExpressions[index];
+		return ((A) getPattern().patternArguments().get(index)).copyWithExpression(expression);
 	}
 	
 	@NotNull

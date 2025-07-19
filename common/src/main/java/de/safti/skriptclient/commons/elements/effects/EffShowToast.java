@@ -7,16 +7,17 @@ import de.safti.skriptclient.api.pattern.PatternBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class EffShowToast extends AbstractEffect {
-	protected final PatternArgument<String> titleArgument = new PatternArgument<>(String.class);
-	protected final PatternArgument<String> messageArgument = new PatternArgument<>(String.class);
-	
-	private final Pattern pattern =
+	public static final Pattern PATTERN =
 			new PatternBuilder()
 					.literal("show toast with title")
-					.argument(titleArgument)
+					.argument(new PatternArgument<>(String.class))
 					.literal("and message")
-					.argument(messageArgument)
+					.argument(new PatternArgument<>(String.class))
 					.build();
+	
+	protected final PatternArgument<String> titleArgument = getArgument(0);
+	protected final PatternArgument<String> messageArgument = getArgument(1);
+	
 	
 	public EffShowToast() {
 	}
@@ -24,6 +25,6 @@ public abstract class EffShowToast extends AbstractEffect {
 	@Override
 	@NotNull
 	protected Pattern getPattern() {
-		return pattern;
+		return PATTERN;
 	}
 }

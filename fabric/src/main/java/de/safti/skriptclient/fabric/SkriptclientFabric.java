@@ -8,7 +8,6 @@ public final class SkriptclientFabric implements ModInitializer {
     
     @Override
     public void onInitialize() {
-        System.out.println("SkriptclientFabric.onInitialize");
         SkriptClient.init(CORE);
     }
 }

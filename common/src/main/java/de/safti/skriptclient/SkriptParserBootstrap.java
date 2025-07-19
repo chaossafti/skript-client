@@ -36,7 +36,6 @@ public class SkriptParserBootstrap {
 	}
 	
 	public static void initSkript(Core core) {
-		System.out.println("SkriptParserBootstrap.initSkript");
 		// first step is to init the skript parser
 		initParser(core);
 		
@@ -73,7 +72,6 @@ public class SkriptParserBootstrap {
 		
 		// fixme: log.error doesn't log to console (?)
 		// tested with fabric
-		System.out.println("e");
 		log.error("Skript-Client has detected some Syntaxes to not be implemented.");
 		log.error("Here is a full list of Syntaxes: ");
 		for (Class<? extends SyntaxElement> missingSyntax : missingSyntaxes) {
@@ -97,12 +95,12 @@ public class SkriptParserBootstrap {
 		
 		String loaderPackageName = loader.toString().toLowerCase();
 		
-		String[] mainPackages = new String[] {"de.safti.skriptclient." + loaderPackageName + ".elements"};
+		String[] mainPackages = new String[] {"de.safti.skriptclient." + loaderPackageName + ".elements", "de.safti.skriptclient.commons.defaultelements"};
 		String[] subPackages = core.getSubPackagesToLoad();
 		String[] javaArgs = new String[] {};
 		
 		// make sure standalone is set to false; we will take care of registering skript addons in the future
-		Parser.init(mainPackages, subPackages, javaArgs, false);
+		Parser.init(mainPackages, subPackages, javaArgs, SkriptParserBootstrap.class);
 	}
 	
 	private static Set<ScriptLoadInfo> loadScripts(Core core) throws IOException {

@@ -1,5 +1,6 @@
 package de.safti.skriptclient.fabric.elements.effects;
 
+import de.safti.skriptclient.api.SkriptRegistry;
 import de.safti.skriptclient.commons.elements.effects.EffShowToast;
 import de.safti.skriptclient.logging.runtime.RuntimeLogger;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
@@ -11,6 +12,11 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 public class EffShowToastFabric extends EffShowToast {
+	
+	static {
+		SkriptRegistry.registerEffect(EffShowToastFabric.class, PATTERN);
+	}
+	
 	
 	@Override
 	protected boolean validate(int matchedPattern, @NotNull ParseContext parseContext) {

@@ -31,8 +31,9 @@ public class PatternArgument<T> {
 		this.single = single;
 	}
 	
-	@ApiStatus.Internal
-	public void setExpression(@NotNull Expression<T> expression) {
+	private PatternArgument(Type<T> type, boolean single, Expression<T> expression) {
+		this.type = type;
+		this.single = single;
 		this.expression = expression;
 	}
 	
@@ -57,6 +58,12 @@ public class PatternArgument<T> {
 	
 	public T[] resolveAll(TriggerContext context) {
 		return expression.getValues(context);
+	}
+	
+	@ApiStatus.Internal
+	public PatternArgument<T> copyWithExpression(@NotNull Expression<T> expression) {
+		return new PatternArgument<>(type, single, expression);
+		
 	}
 	
 }
