@@ -1,5 +1,7 @@
 architectury {
     common rootProject.enabled_platforms.split(',')
+
+    transformerVersion = "5.2.87"
 }
 
 dependencies {
@@ -9,5 +11,14 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+
+}
+
+build {
+    dependsOn(tasks.named("shadowJar"))
+}
+
+shadowJar {
+    archiveClassifier.set('main')
 
 }

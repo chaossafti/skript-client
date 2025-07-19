@@ -24,7 +24,12 @@ public class FabricCore implements Core {
 	
 	@Override
 	public @NotNull Path getSkriptClientFolder() {
-		return FabricLoader.getInstance().getConfigDir().resolve(SkriptClient.MOD_ID);
+		Path path = FabricLoader.getInstance().getConfigDir().resolve(SkriptClient.MOD_ID);
+		if(!path.toFile().exists()) {
+			path.toFile().mkdirs();
+		}
+		
+		return path;
 	}
 	
 	@Override

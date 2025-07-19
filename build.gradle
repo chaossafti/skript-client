@@ -16,6 +16,7 @@ allprojects {
 subprojects {
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'
+    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'maven-publish'
 
     base {
@@ -37,12 +38,8 @@ subprojects {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
 
-
         // custom dependencies
-        // fixme: somehow shade the skript-parser jar into every mod file when building
-        modImplementation fileTree(dir: "$rootDir/libs", include: ["*.jar"])
-        modInclude fileTree(dir: "$rootDir/libs", include: ["*.jar"])
-
+        implementation fileTree(dir: "$rootDir/libs", include: ["*.jar"])
     }
 
     java {

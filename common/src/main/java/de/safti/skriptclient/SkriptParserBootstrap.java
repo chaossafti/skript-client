@@ -13,22 +13,19 @@ import io.github.syst3ms.skriptparser.parsing.ScriptLoader;
 import io.github.syst3ms.skriptparser.registration.ExpressionInfo;
 import io.github.syst3ms.skriptparser.registration.SkriptRegistration;
 import io.github.syst3ms.skriptparser.registration.SyntaxInfo;
+import io.github.syst3ms.skriptparser.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class SkriptParserBootstrap {
@@ -130,31 +127,40 @@ public class SkriptParserBootstrap {
 	private static Set<Class<? extends SyntaxElement>> getNotImplementedSyntaxes(Core core) {
 		Set<Class<? extends SyntaxElement>> missingSyntaxes = new HashSet<>();
 		SkriptRegistration registry = Parser.getMainRegistration();
-		Reflections reflections = new Reflections(
-				new ConfigurationBuilder()
-						.forPackage("de.safti.skriptclient.commons.elements")
-						// the commons.elements package has all Syntaxes that must be implemented
-						.filterInputsBy(new FilterBuilder().includePackage("de.safti.skriptclient.commons.elements"))
-						.setScanners(Scanners.values()));
+		
+		// load classes
+		Set<Class<?>> allClasses = new HashSet<>();
+		try {
+			File jarFile = FileUtils.getJarFile(SkriptParserBootstrap.class);
+			 FileUtils.loadClasses(jarFile, "de.safti.skriptclient.commons.elements", "expressions", "effects");
+		}
+		catch (URISyntaxException | IOException e) {
+			throw new RuntimeException(e);
+		}
 		
 		// effect, code section
-		missingSyntaxes.addAll(getMissingImplementations(reflections, Effect.class, registry.getEffects()));
-		missingSyntaxes.addAll(getMissingImplementations(reflections, CodeSection.class, registry.getSections()));
+		missingSyntaxes.addAll(getMissingImplementations(allClasses, Effect.class, registry.getEffects()));
+		missingSyntaxes.addAll(getMissingImplementations(allClasses, CodeSection.class, registry.getSections()));
 		
 		// events
 		List<SyntaxInfo<? extends SkriptEvent>> eventClasses = new ArrayList<>(registry.getEvents());
-		missingSyntaxes.addAll(getMissingImplementations(reflections, SkriptEvent.class, eventClasses));
+		missingSyntaxes.addAll(getMissingImplementations(allClasses, SkriptEvent.class, eventClasses));
 		
 		// expressions are registered differently; use a separate helper method
-		missingSyntaxes.addAll(getMissingImplementations(reflections));
+		missingSyntaxes.addAll(getMissingImplementations(allClasses));
 		
 		return missingSyntaxes;
 	}
 	
 	
 	private static <T extends SyntaxElement> Set<Class<? extends T>> getMissingImplementations
-			(Reflections reflections, Class<T> syntaxClass, List<SyntaxInfo<? extends T>> registered) {
-		Set<Class<? extends T>> classes = reflections.getSubTypesOf(syntaxClass);
+			(Set<Class<?>> allClasses, Class<T> syntaxClass, List<SyntaxInfo<? extends T>> registered) {
+		Set<Class<? extends T>> classes = new HashSet<>();
+		for (Class<?> clazz : allClasses) {
+			if(clazz.isAssignableFrom(syntaxClass)) {
+				classes.add((Class<? extends T>) clazz);
+			}
+		}
 		
 		Set<Class<? extends T>> registeredClasses =
 				registered.stream()
@@ -171,10 +177,15 @@ public class SkriptParserBootstrap {
 		return missing;
 	}
 	
-	private static Set<Class<? extends SyntaxElement>> getMissingImplementations(Reflections reflections) {
+	private static Set<Class<? extends SyntaxElement>> getMissingImplementations(Set<Class<?>> allClasses) {
 		List<ExpressionInfo<?, ?>> registered = Parser.getMainRegistration().getExpressions().getAllValues();
 		//noinspection rawtypes
-		Set<Class<? extends Expression>> classes = reflections.getSubTypesOf(Expression.class);
+		Set<Class<? extends Expression>> classes = new HashSet<>();
+		for (Class<?> clazz : allClasses) {
+			if(clazz.isAssignableFrom(Expression.class)) {
+				classes.add((Class<? extends Expression>) clazz);
+			}
+		}
 		
 		Set<Class<?>> registeredClasses =
 				registered.stream()
@@ -190,7 +201,5 @@ public class SkriptParserBootstrap {
 		
 		return missing;
 	}
-	
-	
 	
 }
