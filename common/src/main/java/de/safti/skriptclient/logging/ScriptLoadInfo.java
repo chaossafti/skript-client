@@ -7,5 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.util.Set;
 
+@Deprecated
 public record ScriptLoadInfo(@NotNull Set<LogEntry> logs, @Nullable Path script, boolean successful) {
 }

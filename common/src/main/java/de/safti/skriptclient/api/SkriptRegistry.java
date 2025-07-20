@@ -1,12 +1,13 @@
 package de.safti.skriptclient.api;
 
+import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.api.pattern.Pattern;
-import io.github.syst3ms.skriptparser.Parser;
 
 public class SkriptRegistry {
 	
 	public static void registerEffect(Class<? extends AbstractEffect> clazz, Pattern pattern) {
-		Parser.getMainRegistration()
+		SkriptClient.INSTANCE
+				.getRegistry()
 				.addEffect(clazz, pattern.pattern());
 		
 	}

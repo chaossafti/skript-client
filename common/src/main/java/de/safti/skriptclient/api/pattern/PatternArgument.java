@@ -23,7 +23,7 @@ public class PatternArgument<T> {
 	}
 	
 	public PatternArgument(Class<T> clazz, boolean single) {
-		this(TypeManager.getByClassExact(clazz).orElseThrow(), single);
+		this((Type<T>) TypeManager.getByClass(clazz).orElseThrow(), single);
 	}
 	
 	public PatternArgument(Type<T> type, boolean single) {
