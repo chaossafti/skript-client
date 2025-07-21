@@ -11,7 +11,7 @@ public class SkriptClient extends SkriptAddon {
 	public static final String MOD_ID = "skript-client";
 	
 	public static boolean IS_INITIALIZED = false;
-	public static Core core;
+	public static Core CORE;
 	public static SkriptClient INSTANCE;
 	public static boolean IS_TEST_ENV;
 
@@ -26,7 +26,7 @@ public class SkriptClient extends SkriptAddon {
 
 		INSTANCE = new SkriptClient();
 		
-		SkriptClient.core = core;
+		SkriptClient.CORE = core;
         // load the skript parser
 		// this includes loading scripts
 		SkriptParserBootstrap.initSkript(core);

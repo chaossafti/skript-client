@@ -7,5 +7,7 @@ public interface ClientWrapper {
 	void showErrorToast(String title, String message, Duration duration);
 	
 	void runOnStartup(Runnable runnable);
+
+
 	
 }

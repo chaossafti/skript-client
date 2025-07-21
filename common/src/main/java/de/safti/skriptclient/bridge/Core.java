@@ -2,9 +2,9 @@ package de.safti.skriptclient.bridge;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public interface Core {
 	
@@ -50,5 +50,9 @@ public interface Core {
 	
 	@NotNull
 	ClientWrapper getClient();
+
+	void scheduleRepeatedTask(Runnable task, Duration delay, Duration repeatEvery, int totalRepeats);
+
+	void runTaskIn(Runnable task, Duration delay);
 	
 }

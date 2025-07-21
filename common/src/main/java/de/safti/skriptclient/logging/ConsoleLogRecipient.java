@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.Set;
 
 public class ConsoleLogRecipient implements LogRecipient {
@@ -82,7 +81,7 @@ public class ConsoleLogRecipient implements LogRecipient {
 	@Override
 	public void sendNoScriptsFound() {
 		log.warn("Skript-Client could not find any Scripts to load!");
-		log.warn("Scripts should be located at {}", SkriptClient.core.getScriptsFolder().toFile().getAbsolutePath());
+		log.warn("Scripts should be located at {}", SkriptClient.CORE.getScriptsFolder().toFile().getAbsolutePath());
 	}
 	
 	@Override

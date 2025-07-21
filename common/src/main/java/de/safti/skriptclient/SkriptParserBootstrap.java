@@ -37,7 +37,7 @@ public class SkriptParserBootstrap {
 
 
         registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons", "expressions", "effects", "events", "types", "tags");
-        registerSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient." + SkriptClient.core.getLoader().toString().toLowerCase(), "structures", "properties");
+        registerSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient." + SkriptClient.CORE.getLoader().toString().toLowerCase(), "structures", "properties");
         registerStandaloneSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone");
     }
 
