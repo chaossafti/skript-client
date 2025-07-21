@@ -12,7 +12,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "de.safti.skriptclient.fabric.SkriptclientFabric"
+      "de.safti.skriptclient.fabric.SkriptClientFabric"
     ],
     "client": [
       "de.safti.skriptclient.fabric.client.SkriptclientFabricClient"

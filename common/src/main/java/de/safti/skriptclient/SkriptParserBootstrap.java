@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -143,7 +144,14 @@ public class SkriptParserBootstrap {
         Set<ScriptLoadResult> loadResults;
 
         try {
-            loadResults = loadScripts(core);
+            if(SkriptClient.IS_TEST_ENV) {
+                Path rootRelative = Paths.get("").toAbsolutePath().normalize();
+                Path targetDir = rootRelative.resolve("test scripts");
+                loadResults = loadScripts(targetDir);
+            } else {
+                loadResults = loadScripts(core.getScriptsFolder());
+            }
+
         } catch (IOException e) {
             log.error("Error whilst loading scripts: ", e);
             return;
@@ -172,11 +180,11 @@ public class SkriptParserBootstrap {
         log.error("Skript-client will continue working, but some Syntaxes might not work.");
     }
 
-    private static Set<ScriptLoadResult> loadScripts(Core core) throws IOException {
+    private static Set<ScriptLoadResult> loadScripts(Path scripts) throws IOException {
         Set<ScriptLoadResult> loadResult = new HashSet<>();
 
         //noinspection resource
-        Files.walk(core.getSkriptClientFolder())
+        Files.walk(scripts)
                 .filter(path -> path.toFile().getName().endsWith(".sk"))
                 .forEach(path -> loadResult.add(loadScript(path)));
 
