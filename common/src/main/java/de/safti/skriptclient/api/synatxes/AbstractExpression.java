@@ -19,7 +19,7 @@ public abstract class AbstractExpression<T> implements Expression<T>, PatternSup
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
         parsedExpressions = expressions;
-        return validatePattern(expressions, parseContext.getLogger()) && validate(matchedPattern, parseContext);
+        return validatePattern(parseContext.getLogger()) && validate(matchedPattern, parseContext);
     }
 
     @Override

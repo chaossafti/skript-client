@@ -1,18 +1,12 @@
 package de.safti.skriptclient.api.synatxes;
 
 import de.safti.skriptclient.api.exceptions.SyntaxRuntimeException;
-import de.safti.skriptclient.api.pattern.Pattern;
-import de.safti.skriptclient.api.pattern.PatternArgument;
 import de.safti.skriptclient.logging.runtime.RuntimeLogger;
 import io.github.syst3ms.skriptparser.lang.Effect;
 import io.github.syst3ms.skriptparser.lang.Expression;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
-import io.github.syst3ms.skriptparser.log.ErrorType;
-import io.github.syst3ms.skriptparser.log.SkriptLogger;
 import io.github.syst3ms.skriptparser.parsing.ParseContext;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public abstract class AbstractEffect extends Effect implements PatternSupportingSyntaxElement {
 	private final RuntimeLogger runtimeLogger = new RuntimeLogger();
@@ -21,7 +15,7 @@ public abstract class AbstractEffect extends Effect implements PatternSupporting
 	@Override
 	public final boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
 		parsedExpressions = expressions;
-		return validatePattern(expressions, parseContext.getLogger()) && validate(matchedPattern, parseContext);
+		return validatePattern(parseContext.getLogger()) && validate(matchedPattern, parseContext);
 	}
 
 	@Override
