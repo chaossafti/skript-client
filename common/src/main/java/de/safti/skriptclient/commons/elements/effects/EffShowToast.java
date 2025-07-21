@@ -1,6 +1,6 @@
 package de.safti.skriptclient.commons.elements.effects;
 
-import de.safti.skriptclient.api.AbstractEffect;
+import de.safti.skriptclient.api.synatxes.AbstractEffect;
 import de.safti.skriptclient.api.pattern.Pattern;
 import de.safti.skriptclient.api.pattern.PatternArgument;
 import de.safti.skriptclient.api.pattern.PatternBuilder;
@@ -24,7 +24,7 @@ public abstract class EffShowToast extends AbstractEffect {
 	
 	@Override
 	@NotNull
-	protected Pattern getPattern() {
+	public Pattern getPattern() {
 		return PATTERN;
 	}
 }

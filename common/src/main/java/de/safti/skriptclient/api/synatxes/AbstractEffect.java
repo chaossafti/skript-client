@@ -1,4 +1,4 @@
-package de.safti.skriptclient.api;
+package de.safti.skriptclient.api.synatxes;
 
 import de.safti.skriptclient.api.exceptions.SyntaxRuntimeException;
 import de.safti.skriptclient.api.pattern.Pattern;
@@ -14,27 +14,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public abstract class AbstractEffect extends Effect {
+public abstract class AbstractEffect extends Effect implements PatternSupportingSyntaxElement {
 	private final RuntimeLogger runtimeLogger = new RuntimeLogger();
 	private Expression<?>[] parsedExpressions;
-	
+
 	@Override
 	public final boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
-		SkriptLogger logger = parseContext.getLogger();
-		List<PatternArgument<?>> patternArguments = getPattern().patternArguments();
 		parsedExpressions = expressions;
-		
-		if(expressions.length != patternArguments.size()) {
-			logger.error("Provided expression list unequal argument list; This is a Skript client error. Please report it to the Github issue tracker!", ErrorType.EXCEPTION);
-			// TODO: better logging of this? it most likely wont happen anyway
-			return false;
-		}
-		
-		return validate(matchedPattern, parseContext);
+		return validatePattern(expressions, parseContext.getLogger()) && validate(matchedPattern, parseContext);
 	}
-	
-	protected abstract boolean validate(int matchedPattern, @NotNull ParseContext parseContext);
-	
+
 	@Override
 	protected final void execute(@NotNull TriggerContext triggerContext) {
 		try {
@@ -45,18 +34,14 @@ public abstract class AbstractEffect extends Effect {
 			if(!e.isRelevant()) return;
 			throw e;
 		}
-		
+
 	}
-	
+
+	@Override
+	public @NotNull Expression<?>[] getExpressions() {
+		return parsedExpressions;
+	}
+
 	protected abstract void execute(@NotNull TriggerContext context, RuntimeLogger runtimeLogger);
-	
-	@SuppressWarnings("unchecked")
-	protected <A extends PatternArgument<T>, T> PatternArgument<T> getArgument(int index) {
-		Expression<T> expression = (Expression<T>) parsedExpressions[index];
-		return ((A) getPattern().patternArguments().get(index)).copyWithExpression(expression);
-	}
-	
-	@NotNull
-	protected abstract Pattern getPattern();
-	
+
 }
