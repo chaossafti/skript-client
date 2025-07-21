@@ -1,4 +1,4 @@
-package de.safti.skriptclient.fabric;
+package de.safti.skriptclient.fabric.bridge;
 
 import de.safti.skriptclient.bridge.ClientWrapper;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;

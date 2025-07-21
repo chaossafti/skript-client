@@ -1,2 +1,6 @@
 on load:
 	log "test.sk - on script load success!"
+
+on connect:
+	log "test.sk - detected connect!"
+	log "using packet listener: %packet-listener%"

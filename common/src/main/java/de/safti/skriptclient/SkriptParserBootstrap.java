@@ -11,7 +11,6 @@ import io.github.syst3ms.skriptparser.parsing.script.ScriptLoadResult;
 import io.github.syst3ms.skriptparser.registration.*;
 import io.github.syst3ms.skriptparser.util.FileUtils;
 import io.github.syst3ms.skriptparser.util.MultiMap;
-import org.apache.commons.compress.PasswordRequiredException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,8 @@ import java.util.stream.Collectors;
 public class SkriptParserBootstrap {
     private static final MultiMap<SyntaxPackageType, PackageInfo> MAIN_PACKAGES;
     private static final Set<String> SUB_PACKAGES;
+    private static final MultiMap<PackageInfo, String> EARLY_PACKAGES;
+
 
     private static final Logger log = LoggerFactory.getLogger(SkriptParserBootstrap.class);
 
@@ -36,9 +37,12 @@ public class SkriptParserBootstrap {
     static {
         MAIN_PACKAGES = new MultiMap<>();
         SUB_PACKAGES = new HashSet<>();
+        EARLY_PACKAGES = new MultiMap<>();
 
-        registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons.elements", "expressions", "effects", "events", "types", "tags", "structures", "properties");
+        // make sure to add in types as the first subpackage
+        registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons.elements", "expressions", "events", "effects", "tags", "structures", "properties");
         registerStandaloneSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone");
+        registerEarlyClassLoad(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone", "types");
     }
 
 
@@ -53,7 +57,7 @@ public class SkriptParserBootstrap {
      *
      *
      * <p>
-     * Default sub packages include: expressions, effects, sections, types, properties, events, structures and tags.
+     * Default sub packages include: expressions, effects, sections, properties, events, structures and tags.
      *
      * @param sampleClass A sample class from your project. This is required to load classes.
      * @param mainPackage The main package
@@ -84,6 +88,22 @@ public class SkriptParserBootstrap {
         MAIN_PACKAGES.putOne(SyntaxPackageType.COMMONS, new PackageInfo(mainPackage, sampleClass));
 
         SkriptParserBootstrap.SUB_PACKAGES.addAll(Arrays.asList(subPackages));
+    }
+
+    /**
+     * Loads classes before any other syntax package has been loaded
+     * The way these classes are loaded is explained in {@link #registerSyntaxPackage(Class, String, String...)}
+     * Only the specified subpackages will be loaded.
+     * <p>
+     * This should be used to load Types, as types have to be always loaded first.
+     *
+     * @param sampleClass A sample class from your project. This is required to load classes.
+     * @param mainPackage The main package
+     * @param subPackages The subpackages
+     */
+    public static void registerEarlyClassLoad(Class<?> sampleClass, String mainPackage, String... subPackages) {
+        EARLY_PACKAGES.computeIfAbsent(new PackageInfo(mainPackage, sampleClass), packageInfo -> new ArrayList<>())
+                .addAll(Arrays.asList(subPackages));
     }
 
     /**
@@ -133,11 +153,19 @@ public class SkriptParserBootstrap {
             throw new RuntimeException(e);
         }
 
+        // This should load all Types required for parsing syntaxes
+        doEarlyClassLoad();
+
         // after loading skript parser's standalone syntaxes, we need to make sure are registered
         // that doesn't mean they get put into the SkriptRegistry, but rather into the SyntaxManager.
         // All syntaxes registered by Skript Parser are put into the Parser.getMainRegistry.
         // .register handles that.
         Parser.getMainRegistration().register();
+
+        // We also need to load Skript-Client's registry.
+        // This is because parsing requires types to be initialized.
+        // again, .register handles registering types.
+        SkriptClient.INSTANCE.getRegistry().register();
 
         // before loading all scripts or mixins, make sure that all required syntaxes have been implemented
         // this, at the same time, also loads the Syntaxes for the first time.
@@ -177,6 +205,22 @@ public class SkriptParserBootstrap {
         // log the info;
         // currently this only logs to console, but a custom screen will be implemented sometime.
         ConsoleLogRecipient.INSTANCE.send(loadResults);
+    }
+
+    private static void doEarlyClassLoad() {
+
+        for (PackageInfo packageInfo : EARLY_PACKAGES.keySet()) {
+            List<String> subPackages = EARLY_PACKAGES.get(packageInfo);
+
+            File jarFile;
+            try {
+                jarFile = FileUtils.getJarFile(packageInfo.sampleClass);
+                FileUtils.loadClasses(jarFile, packageInfo.name, subPackages.toArray(String[]::new));
+            } catch (URISyntaxException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     private static void logMissingDependencies(Core core, Set<Class<? extends SyntaxElement>> missingSyntaxes) {

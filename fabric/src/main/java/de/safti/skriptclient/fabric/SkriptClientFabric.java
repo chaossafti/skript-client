@@ -1,7 +1,7 @@
 package de.safti.skriptclient.fabric;
 
 import de.safti.skriptclient.SkriptClient;
-import de.safti.skriptclient.SkriptParserBootstrap;
+import de.safti.skriptclient.fabric.bridge.FabricCore;
 import net.fabricmc.api.ModInitializer;
 
 import static de.safti.skriptclient.SkriptParserBootstrap.registerSyntaxPackage;

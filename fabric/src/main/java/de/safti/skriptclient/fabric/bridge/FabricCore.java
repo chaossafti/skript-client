@@ -1,4 +1,4 @@
-package de.safti.skriptclient.fabric;
+package de.safti.skriptclient.fabric.bridge;
 
 import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.bridge.ClientWrapper;
