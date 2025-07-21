@@ -1,5 +1,6 @@
 package de.safti.skriptclient.api.synatxes;
 
+import de.safti.skriptclient.api.pattern.ResolvedPattern;
 import de.safti.skriptclient.api.synatxes.expression.*;
 import io.github.syst3ms.skriptparser.lang.Expression;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
@@ -12,19 +13,18 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class AbstractExpression<T> implements Expression<T>, PatternSupportingSyntaxElement {
-    private Expression<?>[] parsedExpressions;
-
+public abstract class AbstractExpression<T> implements Expression<T>, ArgumentDrivenSyntax {
+    private ResolvedPattern personalPattern;
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
-        parsedExpressions = expressions;
-        return validatePattern(parseContext.getLogger()) && validate(matchedPattern, parseContext);
+        personalPattern = getPatternBundle().resolve(matchedPattern, expressions, parseContext);
+        return validate(matchedPattern, parseContext);
     }
 
     @Override
-    public @NotNull Expression<?>[] getExpressions() {
-        return parsedExpressions;
+    public ResolvedPattern getPersonalPattern() {
+        return personalPattern;
     }
 
     @Override

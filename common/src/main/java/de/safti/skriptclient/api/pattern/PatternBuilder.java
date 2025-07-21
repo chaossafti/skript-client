@@ -1,50 +1,69 @@
 package de.safti.skriptclient.api.pattern;
 
-import org.intellij.lang.annotations.RegExp;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class PatternBuilder {
-	private final StringBuilder stringBuilder = new StringBuilder();
-	private final List<PatternArgument<?>> arguments = new ArrayList<>();
+    private final PatternBundleBuilder parentBuilder;
+    private final StringBuilder stringBuilder = new StringBuilder();
 
-	
-	public PatternBuilder() {
-	
-	}
-	
-	public PatternBuilder literal(String str) {
-		if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
+    private final List<PatternBundleBuilder.ExpressionArgumentInfo> expressionArguments = new ArrayList<>();
+    private final List<PatternBundleBuilder.RegexArgumentInfo> regexArguments = new ArrayList<>();
 
-		stringBuilder.append(str);
-		return this;
-	}
+    PatternBuilder(PatternBundleBuilder parentBuilder) {
+        this.parentBuilder = parentBuilder;
+    }
 
-	public PatternBuilder regex(@RegExp String regex) {
-		if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
+    public PatternBuilder literal(String str) {
+        if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
 
-		stringBuilder.append("<")
-				.append(regex)
-				.append(">");
+        stringBuilder.append(str);
+        return this;
+    }
 
-		return this;
-	}
+    public PatternBuilder regex(String name) {
+        if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
 
-	
-	public <A extends PatternArgument<T>, T> PatternBuilder argument(A argument) {
-		if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
-		
-		stringBuilder.append(argument.getPatternArgumentString());
-		arguments.add(argument);
-		
-		return this;
-	}
-	
-	
-	public Pattern build() {
-		return new Pattern(arguments, stringBuilder.toString().strip());
-	}
-	
-	
+        PatternBundleBuilder.RegexArgumentInfo regexInfo = parentBuilder.getRegexArgumentInfo(name);
+        stringBuilder.append("<")
+                .append(regexInfo)
+                .append(">");
+
+        regexArguments.add(regexInfo);
+
+        return this;
+    }
+
+
+    public PatternBuilder argument(String name) {
+        if(!stringBuilder.isEmpty()) stringBuilder.append(" ");
+
+        PatternBundleBuilder.ExpressionArgumentInfo argumentInfo = parentBuilder.getExpressionArgumentInfo(name);
+        if(argumentInfo == null) {
+            throw new IllegalArgumentException("Argument with name " + name + " has not been registered! use SyntaxPatternInfoBuilder#registerArgument to register them.");
+        }
+
+        stringBuilder.append(argumentInfo.getPatternArgumentString());
+        expressionArguments.add(argumentInfo);
+
+        return this;
+    }
+
+    public PatternBundleBuilder build() {
+        parentBuilder.addIncompletePattern(this);
+        return parentBuilder;
+    }
+
+    List<PatternBundleBuilder.ExpressionArgumentInfo> getExpressionArguments() {
+        return expressionArguments;
+    }
+
+    List<PatternBundleBuilder.RegexArgumentInfo> getRegexArguments() {
+        return regexArguments;
+    }
+
+    @Override
+    public String toString() {
+        return stringBuilder.toString();
+    }
 }

@@ -1,6 +1,7 @@
 package de.safti.skriptclient.api.synatxes;
 
 import de.safti.skriptclient.api.exceptions.SyntaxRuntimeException;
+import de.safti.skriptclient.api.pattern.ResolvedPattern;
 import de.safti.skriptclient.logging.runtime.RuntimeLogger;
 import io.github.syst3ms.skriptparser.lang.Effect;
 import io.github.syst3ms.skriptparser.lang.Expression;
@@ -8,14 +9,21 @@ import io.github.syst3ms.skriptparser.lang.TriggerContext;
 import io.github.syst3ms.skriptparser.parsing.ParseContext;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractEffect extends Effect implements PatternSupportingSyntaxElement {
+public abstract class AbstractEffect extends Effect implements ArgumentDrivenSyntax {
 	private final RuntimeLogger runtimeLogger = new RuntimeLogger();
-	private Expression<?>[] parsedExpressions;
 
 	@Override
 	public final boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
-		parsedExpressions = expressions;
-		return validatePattern(parseContext.getLogger()) && validate(matchedPattern, parseContext);
+		personalPattern = getPatternBundle().resolve(matchedPattern, expressions, parseContext);
+		return validate(matchedPattern, parseContext);
+	}
+
+	private ResolvedPattern personalPattern;
+
+
+	@Override
+	public ResolvedPattern getPersonalPattern() {
+		return personalPattern;
 	}
 
 	@Override
@@ -29,11 +37,6 @@ public abstract class AbstractEffect extends Effect implements PatternSupporting
 			throw e;
 		}
 
-	}
-
-	@Override
-	public @NotNull Expression<?>[] getExpressions() {
-		return parsedExpressions;
 	}
 
 	protected abstract void execute(@NotNull TriggerContext context, RuntimeLogger runtimeLogger);

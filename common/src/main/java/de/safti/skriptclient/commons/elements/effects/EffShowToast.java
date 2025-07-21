@@ -1,30 +1,41 @@
 package de.safti.skriptclient.commons.elements.effects;
 
+import de.safti.skriptclient.api.pattern.PatternBundle;
 import de.safti.skriptclient.api.synatxes.AbstractEffect;
-import de.safti.skriptclient.api.pattern.Pattern;
-import de.safti.skriptclient.api.pattern.PatternArgument;
-import de.safti.skriptclient.api.pattern.PatternBuilder;
+import de.safti.skriptclient.api.pattern.arguments.ExpressionPatternArgument;
+import de.safti.skriptclient.api.pattern.PatternBundleBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class EffShowToast extends AbstractEffect {
-	public static final Pattern PATTERN =
-			new PatternBuilder()
-					.literal("show toast with title")
-					.argument(new PatternArgument<>(String.class))
-					.literal("and message")
-					.argument(new PatternArgument<>(String.class))
+	private static final String TITLE = "title";
+	private static final String MESSAGE = "message";
+
+	public static final PatternBundle PATTERNS =
+			PatternBundleBuilder.builder()
+					.registerExpressionArgument("title", String.class, false)
+					.registerExpressionArgument("message", String.class, false)
+					.newPattern()
+						.literal("show toast with title")
+						.argument(TITLE)
+						.literal("and message")
+						.argument(MESSAGE)
+						.build()
 					.build();
 	
-	protected final PatternArgument<String> titleArgument = getArgument(0);
-	protected final PatternArgument<String> messageArgument = getArgument(1);
+	protected final ExpressionPatternArgument<String> titleArgument = getArgument(TITLE);
+	protected final ExpressionPatternArgument<String> messageArgument = getArgument(MESSAGE);
 	
-	
+
+
 	public EffShowToast() {
+
 	}
+
+
 	
 	@Override
 	@NotNull
-	public Pattern getPattern() {
-		return PATTERN;
+	public PatternBundle getPatternBundle() {
+		return PATTERNS;
 	}
 }

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class EffShowToastFabric extends EffShowToast {
 	
 	static {
-		SkriptRegistry.registerEffect(EffShowToastFabric.class, PATTERN);
+		SkriptRegistry.registerEffect(EffShowToastFabric.class, PATTERNS);
 	}
 	
 	

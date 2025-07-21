@@ -1,22 +1,22 @@
 package de.safti.skriptclient.api.synatxes;
 
+import de.safti.skriptclient.api.pattern.ResolvedPattern;
 import io.github.syst3ms.skriptparser.lang.Expression;
 import io.github.syst3ms.skriptparser.lang.SkriptEvent;
 import io.github.syst3ms.skriptparser.parsing.ParseContext;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractEvent extends SkriptEvent implements PatternSupportingSyntaxElement {
-    private Expression<?>[] parsedExpressions;
+public abstract class AbstractEvent extends SkriptEvent implements ArgumentDrivenSyntax {
+    private ResolvedPattern personalPattern;
 
     @Override
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, ParseContext parseContext) {
-        this.parsedExpressions = expressions;
-
-        return validatePattern(parseContext.getLogger()) && validate(matchedPattern, parseContext);
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
+        this.personalPattern = getPatternBundle().resolve(matchedPattern, expressions, parseContext);
+        return validate(matchedPattern, parseContext);
     }
 
     @Override
-    public @NotNull Expression<?>[] getExpressions() {
-        return parsedExpressions;
+    public ResolvedPattern getPersonalPattern() {
+        return personalPattern;
     }
 }
