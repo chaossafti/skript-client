@@ -19,7 +19,7 @@ public class EffShowToastFabric extends EffShowToast {
 	
 	
 	@Override
-	protected boolean validate(int matchedPattern, @NotNull ParseContext parseContext) {
+	public boolean validate(int matchedPattern, @NotNull ParseContext parseContext) {
 		return true;
 	}
 	
