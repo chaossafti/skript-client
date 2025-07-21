@@ -37,9 +37,7 @@ public class SkriptParserBootstrap {
         MAIN_PACKAGES = new MultiMap<>();
         SUB_PACKAGES = new HashSet<>();
 
-
-        registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons", "expressions", "effects", "events", "types", "tags");
-        registerSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient." + SkriptClient.CORE.getLoader().toString().toLowerCase(), "structures", "properties");
+        registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons.elements", "expressions", "effects", "events", "types", "tags", "structures", "properties");
         registerStandaloneSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone");
     }
 
@@ -130,8 +128,7 @@ public class SkriptParserBootstrap {
         // (why??)
 
         try {
-            Set<Class<?>> classes = FileUtils.loadClasses(FileUtils.getJarFile(SkriptRegistration.class), "io.github.syst3ms.skriptparser", SUB_PACKAGES.toArray(new String[0]));
-            System.out.println(classes);
+            FileUtils.loadClasses(FileUtils.getJarFile(SkriptRegistration.class), "io.github.syst3ms.skriptparser", SUB_PACKAGES.toArray(new String[0]));
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
