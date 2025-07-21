@@ -3,6 +3,7 @@ package de.safti.skriptclient;
 import de.safti.skriptclient.bridge.Core;
 import de.safti.skriptclient.commons.standalone.events.EvtLoad;
 import de.safti.skriptclient.logging.ConsoleLogRecipient;
+import io.github.syst3ms.skriptparser.Parser;
 import io.github.syst3ms.skriptparser.lang.*;
 import io.github.syst3ms.skriptparser.parsing.ScriptLoader;
 import io.github.syst3ms.skriptparser.parsing.script.Script;
@@ -10,6 +11,7 @@ import io.github.syst3ms.skriptparser.parsing.script.ScriptLoadResult;
 import io.github.syst3ms.skriptparser.registration.*;
 import io.github.syst3ms.skriptparser.util.FileUtils;
 import io.github.syst3ms.skriptparser.util.MultiMap;
+import org.apache.commons.compress.PasswordRequiredException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +124,24 @@ public class SkriptParserBootstrap {
         // types are required to load syntaxes
         DefaultRegistration.register(SkriptClient.INSTANCE.getRegistry());
 
+        // we need to load standalone parser syntaxes first
+        // some of these syntaxes are used by the passer
+        // and must be loaded/registered
+        // (why??)
+
+        try {
+            Set<Class<?>> classes = FileUtils.loadClasses(FileUtils.getJarFile(SkriptRegistration.class), "io.github.syst3ms.skriptparser", SUB_PACKAGES.toArray(new String[0]));
+            System.out.println(classes);
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // after loading skript parser's standalone syntaxes, we need to make sure are registered
+        // that doesn't mean they get put into the SkriptRegistry, but rather into the SyntaxManager.
+        // All syntaxes registered by Skript Parser are put into the Parser.getMainRegistry.
+        // .register handles that.
+        Parser.getMainRegistration().register();
+
         // before loading all scripts or mixins, make sure that all required syntaxes have been implemented
         // this, at the same time, also loads the Syntaxes for the first time.
         Set<Class<? extends SyntaxElement>> missingSyntaxes = getNotImplementedSyntaxes();
@@ -145,7 +165,7 @@ public class SkriptParserBootstrap {
 
         try {
             if(SkriptClient.IS_TEST_ENV) {
-                Path rootRelative = Paths.get("").toAbsolutePath().normalize();
+                Path rootRelative = Paths.get("").normalize().toAbsolutePath().getParent().getParent();
                 Path targetDir = rootRelative.resolve("test scripts");
                 loadResults = loadScripts(targetDir);
             } else {
@@ -202,6 +222,7 @@ public class SkriptParserBootstrap {
     private static ScriptLoadResult loadScript(Path path) {
         // ScriptLoader handles parsing
         ScriptLoadResult scriptLoadResult = ScriptLoader.loadScript(path, false);
+
 
         // validate that the script parsed successfully
         if(!scriptLoadResult.hasParsedSuccessfully()) {

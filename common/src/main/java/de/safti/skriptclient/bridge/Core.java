@@ -50,9 +50,4 @@ public interface Core {
 	
 	@NotNull
 	ClientWrapper getClient();
-
-	void scheduleRepeatedTask(Runnable task, Duration delay, Duration repeatEvery, int totalRepeats);
-
-	void runTaskIn(Runnable task, Duration delay);
-	
 }

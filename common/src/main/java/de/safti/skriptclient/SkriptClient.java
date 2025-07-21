@@ -33,8 +33,8 @@ public class SkriptClient extends SkriptAddon {
 	}
 
 	public static void initTests(Core core) {
-		init(core);
 		IS_TEST_ENV = true;
+		init(core);
 	}
 
 	private SkriptClient() {

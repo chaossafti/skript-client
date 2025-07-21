@@ -28,7 +28,7 @@ public abstract class AbstractExpression<T> implements Expression<T>, PatternSup
     }
 
     @Override
-    public final void change(@NotNull TriggerContext context, Object @NotNull [] changeWith, @NotNull ChangeMode changeMode) {
+    public final void change(@NotNull TriggerContext context, @NotNull ChangeMode changeMode, Object @NotNull [] changeWith) {
         switch (changeMode) {
             case SET -> castThisToOrThrow(Settable.class).set(changeWith, context);
             case ADD -> castThisToOrThrow(Addable.class).add(changeWith, context);
