@@ -1,5 +1,7 @@
 package de.safti.skriptclient;
 
+import de.safti.skriptclient.api.synatxes.builders.PropertyBuilder;
+import de.safti.skriptclient.api.synatxes.complexregistrars.ComplexTypeRegistrar;
 import de.safti.skriptclient.bridge.Core;
 import de.safti.skriptclient.commons.standalone.events.EvtLoad;
 import de.safti.skriptclient.logging.ConsoleLogRecipient;
@@ -155,6 +157,16 @@ public class SkriptParserBootstrap {
 
         // This should load all Types required for parsing syntaxes
         doEarlyClassLoad();
+
+        // We need to register the Types to the TypeManager
+        // so that ComplexExpressions can use them to register patterns, actions, etc.
+        SkriptClient.INSTANCE.getRegistry()
+                .register();
+
+        // Load complex types
+        // Both of these methods are a part of the ComplexTypeRegistrar registration process
+        ComplexTypeRegistrar.drainRegistrationQueue();
+        PropertyBuilder.drainRegistrationQueue();
 
         // after loading skript parser's standalone syntaxes, we need to make sure are registered
         // that doesn't mean they get put into the SkriptRegistry, but rather into the SyntaxManager.

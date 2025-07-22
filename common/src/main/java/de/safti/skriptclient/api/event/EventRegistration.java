@@ -65,7 +65,7 @@ public final class EventRegistration<E> {
         // Register values
         for (var entry : builder.getNamedValues().entrySet()) {
             String valueName = entry.getKey();
-            Type<?> type = entry.getValue();
+            Class<?> type = entry.getValue();
 
             registerEventValue(type, valueName);
         }
@@ -80,17 +80,16 @@ public final class EventRegistration<E> {
         });
     }
 
-    private <T1> void registerEventValue(Type<T1> type, String valueName) {
+    private <T1> void registerEventValue(Class<T1> c, String valueName) {
         // TODO: multi-value expressions
 
         SkriptRegistry.registerEventValue(
                 EventContext.class,
-                type.getTypeClass(),
+                c,
                 true,
                 valueName,
                 ctx -> {
-                    Class<T1> clazz = type.getTypeClass();
-                    T1[] arr = (T1[]) Array.newInstance(clazz, 1); // only of length one because this doesn't support multi-value event values yet
+                    T1[] arr = (T1[]) Array.newInstance(c, 1); // only of length one because this doesn't support multi-value event values yet
                     T1 value = (T1) ctx.get(valueName);
                     arr[0] = value;
                     return arr;

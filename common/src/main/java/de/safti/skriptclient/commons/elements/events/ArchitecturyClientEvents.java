@@ -84,6 +84,7 @@ public class ArchitecturyClientEvents {
         EventBuilder.create(CHAT_SEND)
                 .pattern("chat send")
                 .eventValue("message", String.class)
+
                 .enterWrappedRegistrationStage()
                 .wrappedRedirector(ClientChatEvent.SEND, ClientChatEvent.Send.class, 0)
                 .register();
@@ -171,7 +172,7 @@ public class ArchitecturyClientEvents {
         EventBuilder.create(GUI_SCREEN_RENDER_PRE)
                 .pattern("gui screen render pre")
                 .eventValue("screen", Screen.class)
-                .eventValue("screen", Graphics.class)
+                .eventValue("graphics", Graphics.class)
                 .eventValue("mouseX", Integer.class)
                 .eventValue("mouseY", Integer.class)
                 .eventValue("delta tracker", DeltaTracker.class)
@@ -183,7 +184,7 @@ public class ArchitecturyClientEvents {
         EventBuilder.create(GUI_SCREEN_RENDER_POST)
                 .pattern("gui screen render post")
                 .eventValue("screen", Screen.class)
-                .eventValue("screen", Graphics.class)
+                .eventValue("graphics", Graphics.class)
                 .eventValue("mouseX", Integer.class)
                 .eventValue("mouseY", Integer.class)
                 .eventValue("delta tracker", DeltaTracker.class)
@@ -201,7 +202,7 @@ public class ArchitecturyClientEvents {
 
         // Player events
         EventBuilder.create(PLAYER_JOIN)
-                .pattern("client player join")
+                .pattern("connect")
                 .eventValue("player", LocalPlayer.class)
 
                 .enterWrappedRegistrationStage()
@@ -216,7 +217,6 @@ public class ArchitecturyClientEvents {
                 .wrappedRedirector(ClientPlayerEvent.CLIENT_PLAYER_QUIT, ClientPlayerEvent.ClientPlayerQuit.class, 0)
                 .register();
 
-        // TODO: figure out how to use context values for this
         EventBuilder.create(PLAYER_RESPAWN)
                 .pattern("client player respawn")
                 .eventValue("past player", LocalPlayer.class)

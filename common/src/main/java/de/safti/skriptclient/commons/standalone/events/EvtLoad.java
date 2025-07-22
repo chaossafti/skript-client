@@ -9,7 +9,6 @@ import io.github.syst3ms.skriptparser.parsing.script.Script;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: replace with new element api, once it's done
 public class EvtLoad extends SkriptEvent {
 
     public record ScriptLoadContext(Script script) implements TriggerContext {

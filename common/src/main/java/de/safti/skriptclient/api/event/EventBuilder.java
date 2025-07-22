@@ -3,8 +3,6 @@ package de.safti.skriptclient.api.event;
 import de.safti.skriptclient.api.event.EventWrapperExtension.WrappedEvent;
 import de.safti.skriptclient.api.event.interfaces.EventContextData;
 import de.safti.skriptclient.api.event.interfaces.EventRedirector;
-import io.github.syst3ms.skriptparser.types.Type;
-import io.github.syst3ms.skriptparser.types.TypeManager;
 
 import java.util.*;
 
@@ -13,7 +11,7 @@ public final class EventBuilder {
 
     private final String eventName;
     private String[] pattern;
-    private final LinkedHashMap<String, Type<?>> namedValues = new LinkedHashMap<>();
+    private final LinkedHashMap<String, Class<?>> namedValues = new LinkedHashMap<>();
 
     private EventBuilder(String eventName) {
         this.eventName = eventName;
@@ -42,10 +40,8 @@ public final class EventBuilder {
     public EventBuilder eventValue(String name, Class<?> typeClass) {
         if (namedValues.containsKey(name))
             throw new IllegalArgumentException("Duplicate event value name: " + name);
-        Optional<Type<?>> typeOpt = (Optional<Type<?>>) TypeManager.getByClass(typeClass);
-        if (typeOpt.isEmpty())
-            throw new IllegalArgumentException("Unknown type: " + typeClass);
-        namedValues.put(name, typeOpt.get());
+
+        namedValues.put(name, typeClass);
         return this;
     }
 
@@ -76,7 +72,7 @@ public final class EventBuilder {
         return List.copyOf(namedValues.keySet());
     }
 
-    public Map<String, Type<?>> getNamedValues() {
+    public Map<String, Class<?>> getNamedValues() {
         return namedValues;
     }
 

@@ -64,8 +64,6 @@ public class ConsoleLogRecipient implements LogRecipient {
 	}
 	
 	private void logLogEntry(LogEntry logEntry) {
-		// TODO: make the skript parser fork hold reference to the unedited message without the bloated ending
-
 		int line = logEntry.getLine() + 1;
 		LogType type = logEntry.getType();
 		Script script = logEntry.getScript();

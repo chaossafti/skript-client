@@ -2,10 +2,13 @@ package de.safti.skriptclient.api.event;
 
 
 import de.safti.skriptclient.api.event.interfaces.EventRedirector;
+import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventResult;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
+import java.rmi.UnexpectedException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -45,7 +48,10 @@ public class EventWrapperExtension {
                     eventConsumerRef.get().accept(wrappedEvent);
 
                     // return the event result only if the methods signature allows it.
-                    return method.getReturnType().equals(EventResult.class) ? wrappedEvent.result : null;
+                    if(method.getReturnType().equals(EventResult.class)) return wrappedEvent.result;
+                    if(method.getReturnType().equals(CompoundEventResult.class)) return CompoundEventResult.pass();
+                    if(method.getReturnType().equals(Void.TYPE) || method.getReturnType().equals(Void.class)) return null;
+                    throw new IllegalStateException("event Method wants " + method.getReturnType() + " as return type. Listener: " + listenerClass);
                 }
         ));
 
@@ -67,7 +73,7 @@ public class EventWrapperExtension {
 
     public static final class WrappedEvent {
         private final Object[] values;
-        private EventResult result;
+        private EventResult result = EventResult.pass();
 
         public WrappedEvent(Object[] values) {
             this.values = values;
@@ -77,10 +83,11 @@ public class EventWrapperExtension {
             return values;
         }
 
-        public void setResult(EventResult result) {
+        public void setResult(@NotNull EventResult result) {
             this.result = result;
         }
 
+        @NotNull
         public EventResult getResult() {
             return result;
         }
