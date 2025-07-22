@@ -10,6 +10,8 @@ import io.github.syst3ms.skriptparser.types.Type;
 
 import java.lang.reflect.Array;
 
+// TODO: support CompoundEventResult for architectury api
+// support changing the event value
 public final class EventRegistration<E> {
     private final EventBuilder builder;
     private final Class<E> modEventClass;
