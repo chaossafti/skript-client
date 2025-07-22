@@ -2,34 +2,59 @@ package de.safti.skriptclient.api.event;
 
 import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.api.SkriptRegistry;
+import de.safti.skriptclient.api.event.interfaces.EventContextData;
+import de.safti.skriptclient.api.event.interfaces.EventContextFactory;
+import de.safti.skriptclient.api.event.interfaces.EventRedirector;
+import dev.architectury.event.Event;
 import io.github.syst3ms.skriptparser.types.Type;
 
 import java.lang.reflect.Array;
 
-public final class EventRegistration<T> {
+public final class EventRegistration<E> {
     private final EventBuilder builder;
-    private final Class<T> modEventClass;
+    private final Class<E> modEventClass;
 
-    private EventContextFactory<T> contextFactory;
-    private EventRedirector<T> redirector;
+    private EventContextFactory<E> contextFactory;
+    private EventRedirector<E> eventRedirector;
 
-    public EventRegistration(EventBuilder builder, Class<T> modEventClass) {
+    public EventRegistration(EventBuilder builder, Class<E> modEventClass) {
         this.builder = builder;
         this.modEventClass = modEventClass;
     }
 
-    public EventRegistration<T> contextValuesFactory(EventContextFactory<T> factory) {
+    public EventRegistration<E> contextValuesFactory(EventContextFactory<E> factory) {
         this.contextFactory = factory;
         return this;
     }
 
-    public EventRegistration<T> redirector(EventRedirector<T> redirector) {
-        this.redirector = redirector;
+    public EventRegistration<E> redirector(EventRedirector<E> redirector) {
+        this.eventRedirector = redirector;
         return this;
     }
 
+    /**
+     * Utility method to call {@link #redirector(EventRedirector)} with an {@link EventRedirector}
+     * created from {@link EventWrapperExtension#redirector(Event, Class, int...)} using the arguments in this method.
+     *
+     * @param event The event.
+     * @param listenerClass The listener class
+     * @param supportedArguments the supported arguments of the listener class to clone
+     * @param <L> The Listener class
+     * @return  this
+     * @see EventWrapperExtension#redirector(Event, Class, int...)
+     */
+    public <L> EventRegistration<E> wrappedRedirector(Event<L> event, Class<L> listenerClass, int... supportedArguments) {
+        if(!modEventClass.isAssignableFrom(EventWrapperExtension.WrappedEvent.class)) {
+            throw new IllegalStateException("EventRegistration is not of event WrappedEvent!");
+        }
+
+        // This is a safe cast because of the condition above.
+        //noinspection unchecked
+        return redirector((EventRedirector<E>) EventWrapperExtension.redirector(event, listenerClass, supportedArguments));
+    }
+
     public void register() {
-        if(contextFactory == null || redirector == null)
+        if(contextFactory == null || eventRedirector == null)
             throw new IllegalStateException("Both contextFactory and redirector must be defined.");
 
         // Register event
@@ -44,9 +69,9 @@ public final class EventRegistration<T> {
         }
 
 
-        redirector.onEvent(event -> {
+        eventRedirector.onEvent(event -> {
             EventContextData data = contextFactory.create(event);
-            EventContext context = builder.createContext(data);
+            EventContext<E> context = builder.createContext(data, event, eventRedirector);
 
             SkriptClient.INSTANCE.getEventManager()
                     .callEvent(builder.getEventName(), context);

@@ -1,4 +1,4 @@
-package de.safti.skriptclient.api.event;
+package de.safti.skriptclient.api.event.interfaces;
 
 /**
  * @param <E> The event class to extract values from

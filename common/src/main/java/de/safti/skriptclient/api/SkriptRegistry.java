@@ -43,7 +43,8 @@ public class SkriptRegistry {
 	public static void registerEvent(Supplier<GeneratedEvent> supplier, String... patterns) {
 		SkriptClient.INSTANCE
 				.getRegistry()
-				.newEvent(SkriptEvent.class, patterns)
+				.newEvent(GeneratedEvent.class, patterns)
+				.setSupplier(supplier)
 				.register();
 	}
 

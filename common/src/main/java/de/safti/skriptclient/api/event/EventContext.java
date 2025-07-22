@@ -1,19 +1,22 @@
 package de.safti.skriptclient.api.event;
 
+import de.safti.skriptclient.api.event.interfaces.EventRedirector;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public final class EventContext implements TriggerContext {
+public class EventContext<E> implements TriggerContext {
     private final String eventName;
     private final Map<String, Object> values;
 
-    private EventContext(String eventName, Map<String, Object> values) {
+    protected EventContext(String eventName, @NotNull Map<String, Object> values) {
         this.eventName = eventName;
-        this.values = Map.copyOf(values); // make it immutable
+        this.values = values;
     }
 
-    public static EventContext of(String eventName, List<String> keys, Object[] data) {
+    public static <E> EventContext<E> of(String eventName, List<String> keys, Object[] data, @Nullable E event,  @Nullable EventRedirector<E> eventRedirector) {
         if (keys.size() != data.length)
             throw new IllegalArgumentException("Mismatch between keys and data");
 
@@ -22,7 +25,11 @@ public final class EventContext implements TriggerContext {
             map.put(keys.get(i), data[i]);
         }
 
-        return new EventContext(eventName, map);
+        if(eventRedirector != null) {
+            return new CancellableEventContext<>(eventName, map, event, eventRedirector);
+        }
+
+        return new EventContext<>(eventName, map);
     }
 
     public Object get(String name) {
@@ -40,6 +47,7 @@ public final class EventContext implements TriggerContext {
     public boolean has(String key) {
         return values.containsKey(key);
     }
+
 
     @Override
     public String toString() {

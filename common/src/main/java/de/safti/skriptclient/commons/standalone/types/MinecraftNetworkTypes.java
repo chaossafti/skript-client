@@ -10,8 +10,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 public class MinecraftNetworkTypes {
 
     static {
-        System.out.println("MinecraftNetworkTypes.static initializer");
-
         SkriptRegistry.registerType(ClientPacketListener.class, "packet-listener", "[packet[-| ]]listener")
                 .register();
     }
