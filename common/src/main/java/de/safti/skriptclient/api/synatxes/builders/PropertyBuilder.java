@@ -6,39 +6,25 @@ import de.safti.skriptclient.api.synatxes.complexregistrars.ComplexTypeRegistrar
 import de.safti.skriptclient.api.synatxes.expression.property.PropertyChanger;
 import de.safti.skriptclient.api.synatxes.expression.property.PropertyGetter;
 import de.safti.skriptclient.api.synatxes.expression.property.PropertyMutator;
+import de.safti.skriptclient.api.synatxes.expression.property.RegistrableProperty;
 import de.safti.skriptclient.api.synatxes.generated.GeneratedPropertyExpression;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
 import io.github.syst3ms.skriptparser.types.Type;
 import io.github.syst3ms.skriptparser.types.TypeManager;
 import org.apache.commons.lang3.function.TriConsumer;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.lang.reflect.Array;
-import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Deque;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class PropertyBuilder<T, H> {
-    /**
-     * same as {@link ComplexTypeRegistrar#COMPLEX_REGISTRATION_QUEUE()}
-     */
-    private static final Deque<PropertyBuilder<?, ?>> REGISTRATION_QUEUE = new ArrayDeque<>();
-
-    @ApiStatus.Internal
-    public static void drainRegistrationQueue() {
-        while(!REGISTRATION_QUEUE.isEmpty()) {
-            REGISTRATION_QUEUE.pop().register();
-        }
-    }
-
-    private final Class<T> propertyClass;
+public class PropertyBuilder<T, H> implements RegistrableProperty<T, H> {
+    private final Class<T> returnClass;
     private final Class<H> holderClass;
     private final String propertyName;
 
@@ -63,7 +49,7 @@ public class PropertyBuilder<T, H> {
     private final @UnknownNullability ComplexTypeRegistrar<H> parent;
 
     public PropertyBuilder(Class<T> typeClass, Class<H> holderClass, String propertyName, @UnknownNullability ComplexTypeRegistrar<H> parent) {
-        this.propertyClass = typeClass;
+        this.returnClass = typeClass;
         this.holderClass = holderClass;
         this.propertyName = propertyName;
         this.parent = parent;
@@ -83,7 +69,7 @@ public class PropertyBuilder<T, H> {
         return getterPlural((h) -> {
             Collection<T> collection = function.apply(h);
             //noinspection unchecked
-            return collection.toArray(l -> (T[]) Array.newInstance(propertyClass, l));
+            return collection.toArray(l -> (T[]) Array.newInstance(returnClass, l));
         });
     }
 
@@ -209,11 +195,13 @@ public class PropertyBuilder<T, H> {
 
     @UnknownNullability
     public ComplexTypeRegistrar<H> queueRegistration() {
-        REGISTRATION_QUEUE.add(this);
+        RegistrableProperty.queue(this);
         return parent;
     }
 
-    private void register() {
+
+    @Override
+    public void registerSelf() {
         if (propertyGetter == null) {
             throw new IllegalStateException("Property getter is required but not set.");
         }
@@ -227,7 +215,7 @@ public class PropertyBuilder<T, H> {
         Supplier<GeneratedPropertyExpression<T, H>> generatedPropertySupplier = () -> new GeneratedPropertyExpression<>(
                 propertyName,
                 holderType.getBaseName(),
-                propertyClass,
+                returnClass,
                 propertyGetter,
                 propertySetter,
                 propertyAdder,
@@ -241,10 +229,69 @@ public class PropertyBuilder<T, H> {
         @SuppressWarnings("unchecked")
         Class<GeneratedPropertyExpression<T, H>> syntaxClass = (Class<GeneratedPropertyExpression<T, H>>) (Class<?>) GeneratedPropertyExpression.class;
 
-        SkriptClient.INSTANCE.getRegistry().newExpression(syntaxClass, propertyClass, isSingle, patterns)
+        SkriptClient.INSTANCE.getRegistry().newExpression(syntaxClass, returnClass, isSingle, patterns)
                 .setSupplier(generatedPropertySupplier)
                 .addData("security", securityLevel)
                 .register();
     }
 
+    @Override
+    public @NotNull Class<T> returnClass() {
+        return returnClass;
+    }
+
+    @Override
+    public @NotNull String propertyName() {
+        return propertyName;
+    }
+
+    @Override
+    public @NotNull Class<H> holderClass() {
+        return holderClass;
+    }
+
+    @Override
+    public @NotNull SecurityLevel securityLevel() {
+        return securityLevel;
+    }
+
+    @Override
+    public boolean isSingle() {
+        return getter().isSingle();
+    }
+
+    @Override
+    public @NotNull PropertyGetter<T, H> getter() {
+        return propertyGetter;
+    }
+
+    @Override
+    public @Nullable PropertyChanger<T, H> setter() {
+        return propertySetter;
+    }
+
+    @Override
+    public @Nullable PropertyChanger<T, H> adder() {
+        return propertyAdder;
+    }
+
+    @Override
+    public @Nullable PropertyChanger<T, H> remover() {
+        return propertyRemover;
+    }
+
+    @Override
+    public @Nullable PropertyMutator<H> resetter() {
+        return propertyResetter;
+    }
+
+    @Override
+    public @Nullable PropertyMutator<H> allRemover() {
+        return propertyAllRemover;
+    }
+
+    @Override
+    public @Nullable PropertyMutator<H> deleter() {
+        return propertyDeleter;
+    }
 }

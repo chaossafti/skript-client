@@ -1,11 +1,12 @@
 package de.safti.skriptclient.api;
 
 import de.safti.skriptclient.SkriptClient;
-import de.safti.skriptclient.api.event.GeneratedEvent;
+import de.safti.skriptclient.api.synatxes.generated.GeneratedEvent;
 import de.safti.skriptclient.api.pattern.PatternBundle;
 import de.safti.skriptclient.api.synatxes.AbstractEffect;
 import de.safti.skriptclient.api.synatxes.AbstractExpression;
 import de.safti.skriptclient.api.synatxes.complexregistrars.ComplexTypeRegistrar;
+import de.safti.skriptclient.api.synatxes.generated.GeneratedLiteral;
 import io.github.syst3ms.skriptparser.lang.SkriptEvent;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
 import io.github.syst3ms.skriptparser.registration.context.ContextValue;
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
 public class SkriptRegistry {
 
     public static void registerEffect(Class<? extends AbstractEffect> clazz, PatternBundle patternBundle) {
+
         SkriptClient.INSTANCE
                 .getRegistry()
                 .addEffect(clazz, patternBundle.extractPatternStrings());
@@ -81,7 +83,14 @@ public class SkriptRegistry {
     }
 
 
+    public static <T> void registerLiteral(Class<T> typeClass, T value, String literalName, SecurityLevel securityLevel) {
+        @SuppressWarnings("unchecked")
+        Class<GeneratedLiteral<T>> literalClass = (Class<GeneratedLiteral<T>>) (Class<?>) GeneratedLiteral.class;
 
-
-
+        SkriptClient.INSTANCE.getRegistry()
+                .newExpression(literalClass, typeClass, true, literalName)
+                .setSupplier(() -> new GeneratedLiteral<>(value, literalName))
+                .addData(SecurityLevel.SECURITY_LEVEL_DATA_STRING, securityLevel)
+                .register();
+    }
 }

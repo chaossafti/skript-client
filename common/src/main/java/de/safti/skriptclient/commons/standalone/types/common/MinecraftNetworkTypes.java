@@ -1,4 +1,4 @@
-package de.safti.skriptclient.commons.standalone.types;
+package de.safti.skriptclient.commons.standalone.types.common;
 
 import de.safti.skriptclient.api.SkriptRegistry;
 import net.minecraft.client.multiplayer.ClientPacketListener;

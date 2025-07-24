@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
@@ -65,11 +64,6 @@ public class ArchitecturyClientEvents {
 
     public static final String SYSTEM_MESSAGE_RECEIVED = "system message received";
 
-    public static final String TICK_CLIENT_PER = "pre client tick";
-    public static final String TICK_CLIENT_POST = "post client tick";
-    public static final String TICK_CLIENT_LEVEL_PRE = "pre client level tick";
-    public static final String TICK_CLIENT_LEVEL_POST = "post client level tick";
-
     public static final String TOOLTIP_APPEND_LINES = "tooltip append lines";
     public static final String TOOLTIP_CHANGE_COLOR = "tooltip change color";
     public static final String TOOLTIP_CHANGE_POSITION = "tooltip change position";
@@ -90,12 +84,12 @@ public class ArchitecturyClientEvents {
                 .register();
 
         EventBuilder.create(CHAT_RECEIVE)
-                .pattern("chat receive")
+                .pattern("message receive")
                 .eventValue("type", ChatType.Bound.class)
                 .eventValue("message", Component.class)
 
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientChatEvent.RECEIVED, ClientChatEvent.Received.class, 0, 1, 2)
+                .wrappedRedirector(ClientChatEvent.RECEIVED, ClientChatEvent.Received.class, Component.class, 0, 1)
                 .register();
 
         // GUI Subevents
@@ -196,8 +190,9 @@ public class ArchitecturyClientEvents {
         EventBuilder.create(GUI_SET_SCREEN)
                 .pattern("gui set screen")
                 .eventValue("screen", Screen.class)
+
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientGuiEvent.SET_SCREEN, ClientGuiEvent.SetScreen.class, 0)
+                .wrappedRedirector(ClientGuiEvent.SET_SCREEN, ClientGuiEvent.SetScreen.class, Screen.class, 0)
                 .register();
 
         // Player events
@@ -338,7 +333,7 @@ public class ArchitecturyClientEvents {
                 .eventValue("keycode", Integer.class)
 
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientScreenInputEvent.CHAR_TYPED_PRE, ClientScreenInputEvent.KeyTyped.class, 0, 1, 2, 3, 4)
+                .wrappedRedirector(ClientScreenInputEvent.CHAR_TYPED_PRE, ClientScreenInputEvent.KeyTyped.class, 0, 1, 2, 3)
                 .register();
 
         EventBuilder.create(SCREENINPUT_KEY_TYPED_POST)
@@ -349,7 +344,7 @@ public class ArchitecturyClientEvents {
                 .eventValue("keycode", Integer.class)
 
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientScreenInputEvent.CHAR_TYPED_POST, ClientScreenInputEvent.KeyTyped.class, 0, 1, 2, 3, 4)
+                .wrappedRedirector(ClientScreenInputEvent.CHAR_TYPED_POST, ClientScreenInputEvent.KeyTyped.class, 0, 1, 2, 3)
                 .register();
 
         EventBuilder.create(SCREENINPUT_MOUSE_CLICKED_PRE)
@@ -456,44 +451,11 @@ public class ArchitecturyClientEvents {
 
         // System messages
         EventBuilder.create(SYSTEM_MESSAGE_RECEIVED)
-                .pattern("system message received")
+                .pattern("system message receive")
                 .eventValue("component", Component.class)
 
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientSystemMessageEvent.RECEIVED, ClientSystemMessageEvent.Received.class, 0)
-                .register();
-
-        // Tick events
-        EventBuilder.create(TICK_CLIENT_PER)
-                .pattern("pre client tick")
-                .eventValue("client", Minecraft.class)
-
-                .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientTickEvent.CLIENT_PRE, ClientTickEvent.Client.class, 0)
-                .register();
-
-        EventBuilder.create(TICK_CLIENT_POST)
-                .pattern("post client tick")
-                .eventValue("client", Minecraft.class)
-
-                .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientTickEvent.CLIENT_POST, ClientTickEvent.Client.class, 0)
-                .register();
-
-        EventBuilder.create(TICK_CLIENT_LEVEL_PRE)
-                .pattern("pre tick world")
-                .eventValue("world", ClientLevel.class)
-
-                .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientTickEvent.CLIENT_LEVEL_PRE, ClientTickEvent.ClientLevel.class, 0)
-                .register();
-
-        EventBuilder.create(TICK_CLIENT_LEVEL_POST)
-                .pattern("post tick world")
-                .eventValue("world", ClientLevel.class)
-
-                .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientTickEvent.CLIENT_LEVEL_POST, ClientTickEvent.ClientLevel.class, 0)
+                .wrappedRedirector(ClientSystemMessageEvent.RECEIVED, ClientSystemMessageEvent.Received.class, Component.class, 0)
                 .register();
 
         // Tooltip events

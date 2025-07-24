@@ -13,7 +13,6 @@ public class SkriptClient extends SkriptAddon {
 	public static boolean IS_INITIALIZED = false;
 	public static Core CORE;
 	public static SkriptClient INSTANCE;
-	public static boolean IS_TEST_ENV;
 
 	private final SkriptRegistration registry = new SkriptRegistration(this);
 	private final SkriptEventManager eventManager = SkriptEventManager.GLOBAL_EVENT_MANAGER;
@@ -30,11 +29,6 @@ public class SkriptClient extends SkriptAddon {
         // load the skript parser
 		// this includes loading scripts
 		SkriptParserBootstrap.initSkript(core);
-	}
-
-	public static void initTests(Core core) {
-		IS_TEST_ENV = true;
-		init(core);
 	}
 
 	private SkriptClient() {

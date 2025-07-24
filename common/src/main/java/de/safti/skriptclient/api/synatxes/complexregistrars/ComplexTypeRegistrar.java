@@ -7,8 +7,8 @@ import de.safti.skriptclient.api.synatxes.complexregistrars.info.TypeActionInfo;
 import de.safti.skriptclient.api.synatxes.complexregistrars.info.TypePropertyInfo;
 import de.safti.skriptclient.api.synatxes.expression.property.PropertyChanger;
 import de.safti.skriptclient.api.synatxes.expression.property.PropertyGetter;
+import de.safti.skriptclient.api.synatxes.expression.property.RegistrableProperty;
 import io.github.syst3ms.skriptparser.registration.SkriptRegistration;
-import io.github.syst3ms.skriptparser.types.TypeManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,7 +99,7 @@ public class ComplexTypeRegistrar<T> extends SkriptRegistration.TypeRegistrar<T>
      * Registers a single read-only property with a full PropertyGetter and a security level.
      */
     public <PT> ComplexTypeRegistrar<T> property(String propertyName, Class<PT> valueClass, SecurityLevel level, PropertyGetter<PT, T> getter) {
-        return property(propertyName, valueClass, level, getter, (BiConsumer<T, PT>) null);
+        return property(propertyName, valueClass, level, getter, null);
     }
 
     /**
@@ -113,7 +113,7 @@ public class ComplexTypeRegistrar<T> extends SkriptRegistration.TypeRegistrar<T>
      * Registers a single read-only property with a full PropertyGetter and a security level.
      */
     private <PT> ComplexTypeRegistrar<T> property(String propertyName, Class<PT> valueClass, SecurityLevel level, PropertyGetter<PT, T> getter, @Nullable BiConsumer<T, PT> propertySetter) {
-        TypePropertyInfo<PT, T> info = new TypePropertyInfo<>(propertyName, valueClass, level, getter, PropertyChanger.createSingle(propertySetter));
+        TypePropertyInfo<PT, T> info = new TypePropertyInfo<>(propertyName, valueClass, clazz, level, getter, PropertyChanger.createSingle(propertySetter));
         properties.add(info);
         return this;
     }
@@ -168,12 +168,10 @@ public class ComplexTypeRegistrar<T> extends SkriptRegistration.TypeRegistrar<T>
 
     private void queueRegister() {
         COMPLEX_REGISTRATION_QUEUE.add(this);
+        properties.forEach(RegistrableProperty::queue);
     }
 
     private void complexRegister() {
-        // register properties
-        properties.forEach(TypePropertyInfo::register);
-
         // register all actions
         actions.forEach(TypeActionInfo::register);
 

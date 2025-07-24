@@ -22,6 +22,7 @@ public interface ArgumentDrivenSyntax {
         return ((A) getPersonalPattern().expressionArguments().get(name));
     }
 
+    // TODO: look up SyntaxManager and SkriptRegistry to provide a default implementation
     @NotNull
     PatternBundle getPatternBundle();
 

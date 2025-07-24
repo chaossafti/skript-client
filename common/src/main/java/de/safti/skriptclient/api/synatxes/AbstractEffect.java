@@ -12,13 +12,13 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractEffect extends Effect implements ArgumentDrivenSyntax {
 	private final RuntimeLogger runtimeLogger = new RuntimeLogger();
 
+	private ResolvedPattern personalPattern;
+
 	@Override
 	public final boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull ParseContext parseContext) {
 		personalPattern = getPatternBundle().resolve(matchedPattern, expressions, parseContext);
 		return validate(matchedPattern, parseContext);
 	}
-
-	private ResolvedPattern personalPattern;
 
 
 	@Override

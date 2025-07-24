@@ -12,4 +12,9 @@ public abstract class CancellableSkriptEvent extends SkriptEvent {
     public void setCancelled(boolean cancelled) {
         isCancelled = cancelled;
     }
+
+    public boolean isCancellable() {
+        return true;
+    }
+
 }

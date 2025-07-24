@@ -1,7 +1,6 @@
 package de.safti.skriptclient;
 
-import de.safti.skriptclient.api.synatxes.builders.PropertyBuilder;
-import de.safti.skriptclient.api.synatxes.complexregistrars.ComplexTypeRegistrar;
+import de.safti.skriptclient.api.synatxes.expression.property.RegistrableProperty;
 import de.safti.skriptclient.bridge.Core;
 import de.safti.skriptclient.commons.standalone.events.EvtLoad;
 import de.safti.skriptclient.logging.ConsoleLogRecipient;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public class SkriptParserBootstrap {
         EARLY_PACKAGES = new MultiMap<>();
 
         // make sure to add in types as the first subpackage
-        registerCommonsSyntaxPackage(SkriptParserBootstrap.class,"de.safti.skriptclient.commons.elements", "expressions", "events", "effects", "tags", "structures", "properties");
+        registerCommonsSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.elements", "expressions", "events", "effects", "tags", "structures", "properties", "converters");
         registerStandaloneSyntaxPackage(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone");
         registerEarlyClassLoad(SkriptParserBootstrap.class, "de.safti.skriptclient.commons.standalone", "types");
     }
@@ -137,8 +135,6 @@ public class SkriptParserBootstrap {
     }
 
 
-
-
     static void initSkript(Core core) {
         // Initialize types before anything else
         // types are required to load syntaxes
@@ -165,8 +161,7 @@ public class SkriptParserBootstrap {
 
         // Load complex types
         // Both of these methods are a part of the ComplexTypeRegistrar registration process
-        ComplexTypeRegistrar.drainRegistrationQueue();
-        PropertyBuilder.drainRegistrationQueue();
+        RegistrableProperty.drainRegistrationQueue();
 
         // after loading skript parser's standalone syntaxes, we need to make sure are registered
         // that doesn't mean they get put into the SkriptRegistry, but rather into the SyntaxManager.
@@ -201,13 +196,7 @@ public class SkriptParserBootstrap {
         Set<ScriptLoadResult> loadResults;
 
         try {
-            if(SkriptClient.IS_TEST_ENV) {
-                Path rootRelative = Paths.get("").normalize().toAbsolutePath().getParent().getParent();
-                Path targetDir = rootRelative.resolve("test scripts");
-                loadResults = loadScripts(targetDir);
-            } else {
-                loadResults = loadScripts(core.getScriptsFolder());
-            }
+            loadResults = loadScripts(core.getScriptsFolder());
 
         } catch (IOException e) {
             log.error("Error whilst loading scripts: ", e);
@@ -272,7 +261,7 @@ public class SkriptParserBootstrap {
      * @return The ScriptLoadResult
      */
     @NotNull
-    private static ScriptLoadResult loadScript(Path path) {
+    public static ScriptLoadResult loadScript(Path path) {
         // ScriptLoader handles parsing
         ScriptLoadResult scriptLoadResult = ScriptLoader.loadScript(path, false);
 
@@ -403,7 +392,6 @@ public class SkriptParserBootstrap {
 
         return missing;
     }
-
 
 
     private SkriptParserBootstrap() {

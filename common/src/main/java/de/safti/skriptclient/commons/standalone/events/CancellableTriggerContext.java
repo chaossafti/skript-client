@@ -8,4 +8,8 @@ public interface CancellableTriggerContext extends TriggerContext {
 
     boolean isCancelled();
 
+    default boolean isCancellable() {
+        return true;
+    }
+
 }

@@ -1,0 +1,5 @@
+on test requirements:
+	reach point "event"
+
+on test run:
+	complete point "event"

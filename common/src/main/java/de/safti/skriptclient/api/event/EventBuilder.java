@@ -83,6 +83,10 @@ public final class EventBuilder {
         if (keys.size() != values.length)
             throw new IllegalArgumentException("Mismatch: keys=" + keys.size() + ", values=" + values.length);
 
-        return EventContext.of(eventName, keys, values, event, redirector);
+        if(redirector.getResultClass() != null) {
+            return EventContext.resulting(eventName, keys, values, event, redirector, redirector.getResultClass(), null);
+        }
+
+        return EventContext.simple(eventName, keys, values, event, redirector);
     }
 }

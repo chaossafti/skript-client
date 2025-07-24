@@ -9,8 +9,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: one-pattern builder or a way to parse a pattern to use no arguments
 public class PatternBundleBuilder {
-	private final StringBuilder stringBuilder = new StringBuilder();
+	// TODO: possibly cleanup expressionArguments to use int keys.
+	//  to force users to create static helper fields
+	//  or find a better idea
 	private final Map<String, ExpressionArgumentInfo> expressionArguments = new HashMap<>();
 	private final Map<String, RegexArgumentInfo> regexArguments = new HashMap<>();
 	private final Set<PatternBuilder> incompletePatterns = new HashSet<>();
@@ -42,6 +45,7 @@ public class PatternBundleBuilder {
 	}
 
 
+	// TODO: registerSingle and registerPlural version. Also, shorten the method name.
 	public PatternBundleBuilder registerExpressionArgument(String name, Class<?> typeClass, boolean plural) {
 		Type<?> type = TypeManager.getByClass(typeClass).orElseThrow();
 
@@ -69,7 +73,7 @@ public class PatternBundleBuilder {
 	public record ExpressionArgumentInfo(Type<?> type, String name, boolean plural) {
 
 		public String getPatternArgumentString() {
-			return "%" + type.withIndefiniteArticle(plural) +  "%";
+			return "%" + (plural ? type.getPluralForms()[0] : type.getBaseName()) +  "%";
 		}
 
 	}

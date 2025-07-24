@@ -48,12 +48,14 @@ public abstract class AbstractExpression<T> implements Expression<T>, ArgumentDr
             return Optional.empty();
         }
 
-        return Optional.ofNullable(getSupportedValues());
+        return Optional.ofNullable(getSupportedChangeValues());
     }
 
 
     @Nullable
-    protected abstract Class<?>[] getSupportedValues();
+    protected Class<?>[] getSupportedChangeValues() {
+        return null;
+    }
 
     private <C> C castThisToOrThrow(Class<C> clazz) {
         if(clazz.isInstance(this)) {

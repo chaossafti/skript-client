@@ -1,7 +1,7 @@
-package de.safti.skriptclient.api.event;
+package de.safti.skriptclient.api.synatxes.generated;
 
+import de.safti.skriptclient.commons.standalone.events.CancellableSkriptEvent;
 import io.github.syst3ms.skriptparser.lang.Expression;
-import io.github.syst3ms.skriptparser.lang.SkriptEvent;
 import io.github.syst3ms.skriptparser.lang.Trigger;
 import io.github.syst3ms.skriptparser.lang.TriggerContext;
 import io.github.syst3ms.skriptparser.lang.event.SkriptEventManager;
@@ -9,11 +9,13 @@ import io.github.syst3ms.skriptparser.parsing.ParseContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class GeneratedEvent extends SkriptEvent {
+public class GeneratedEvent extends CancellableSkriptEvent {
     private final String eventName;
+    private final boolean isCancellable;
 
-    public GeneratedEvent(String eventName) {
+    public GeneratedEvent(String eventName, boolean isCancellable) {
         this.eventName = eventName;
+        this.isCancellable = isCancellable;
     }
 
     @Override
@@ -42,5 +44,10 @@ public final class GeneratedEvent extends SkriptEvent {
             this.eventHandler.getAttachedEventManager().removeEventHandler(eventName, this.eventHandler);
             this.eventHandler = null;
         }
+    }
+
+    @Override
+    public boolean isCancellable() {
+        return isCancellable;
     }
 }
