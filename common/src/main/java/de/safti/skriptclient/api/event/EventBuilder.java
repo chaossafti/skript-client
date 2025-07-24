@@ -81,7 +81,7 @@ public final class EventBuilder {
         Object[] values = data.values();
 
         if (keys.size() != values.length)
-            throw new IllegalArgumentException("Mismatch: keys=" + keys.size() + ", values=" + values.length);
+            throw new IllegalArgumentException("Mismatch: keys=" + keys.size() + ", values=" + values.length + " Event: " + eventName);
 
         if(redirector.getResultClass() != null) {
             return EventContext.resulting(eventName, keys, values, event, redirector, redirector.getResultClass(), null);

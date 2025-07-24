@@ -218,7 +218,7 @@ public class ArchitecturyClientEvents {
                 .eventValue("player", LocalPlayer.class)
 
                 .enterWrappedRegistrationStage()
-                .wrappedRedirector(ClientPlayerEvent.CLIENT_PLAYER_RESPAWN, ClientPlayerEvent.ClientPlayerRespawn.class, 0)
+                .wrappedRedirector(ClientPlayerEvent.CLIENT_PLAYER_RESPAWN, ClientPlayerEvent.ClientPlayerRespawn.class, 0, 1)
                 .register();
 
         // Raw input

@@ -12,7 +12,6 @@ public final class SkriptClientFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         registerSyntaxPackage(SkriptClientFabric.class, "de.safti.skriptclient.fabric.elements");
-
         SkriptClient.init(CORE);
     }
 }
