@@ -5,7 +5,9 @@ import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
 import io.wispforest.owo.ui.component.TextureComponent;
 import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.util.Observable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
@@ -22,7 +24,7 @@ public class LogTableEntry extends FlowLayout {
 
     private final LogEntry logEntry;
     private final LogTableSizeContext sizeContext;
-    private int color = 0xFFFFFFFF;
+    private Observable<Integer> color = Observable.of(0xFFFFFFFF);
 
     protected LogTableEntry(LogEntry logEntry, LogTableSizeContext sizeContext) {
         super(Sizing.expand(), Sizing.content(), Algorithm.HORIZONTAL);
@@ -47,9 +49,8 @@ public class LogTableEntry extends FlowLayout {
 
         texture.mouseDown().subscribe((mouseX, mouseY, button) -> {
             if(button != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
-
-
-
+            if(color.get() == 0xFFCCCCCC) setColor(0xFFFFFFFF);
+            else setColor(0xFFCCCCCC);
             return true;
         });
 
@@ -69,8 +70,16 @@ public class LogTableEntry extends FlowLayout {
         LabelComponent scriptLabel = (LabelComponent) Components.label(Component.literal(logEntry.getScript().getName()))
                 .horizontalSizing(Sizing.fixed(sizeContext.scriptWidth()));
         child(scriptLabel);
+    }
 
-
+    public void setColor(int newColor) {
+        this.color.set(newColor);
+        Color c = Color.ofArgb(newColor);
+        for (io.wispforest.owo.ui.core.Component child : children()) {
+            if(child instanceof LabelComponent labelComponent) {
+                labelComponent.color(c);
+            }
+        }
     }
 
 

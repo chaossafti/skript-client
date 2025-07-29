@@ -6,6 +6,7 @@ import io.wispforest.owo.ui.component.TextureComponent;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.util.Observable;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,7 +34,7 @@ public class LogTableHead extends FlowLayout {
                 12 + fullGap + sizeContext.lineStringWidth() + fullGap + sizeContext.messageWidth() + halfGap // after message
         );
 
-        this.surface(new ColumnSeparatorSurface(xSeparators, sizeContext.verticalGap(), 0xFFFFFFFF)); // white lines
+        this.surface(new ColumnSeparatorSurface(xSeparators, sizeContext.verticalGap(), Observable.of(0xFFFFFFFF))); // white lines
 
         // children
 
