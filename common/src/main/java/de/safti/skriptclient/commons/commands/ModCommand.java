@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import de.safti.skriptclient.SkriptClient;
 import de.safti.skriptclient.bridge.Core;
 import de.safti.skriptclient.logging.StoringLogRecipient;
+import io.github.syst3ms.skriptparser.log.LogType;
 import io.github.syst3ms.skriptparser.parsing.ScriptLoader;
 import io.github.syst3ms.skriptparser.parsing.script.Script;
 import io.github.syst3ms.skriptparser.parsing.script.ScriptLoadResult;
@@ -17,6 +18,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,10 +101,14 @@ public class ModCommand {
         // log
         StoringLogRecipient.INSTANCE.send(Set.of(loadResult));
 
-        // TODO: formatting
+
         // send success
-        ctx.getSource().sendSuccess(() -> Component.literal("Reloaded: " + target), false);
-        ctx.getSource().sendSuccess(() -> Component.literal("Press o to see the logs!"), false);
+        ctx.getSource().sendSuccess(() -> Component.literal("§7[&6SK-Client§7] Reloaded: " + target), false);
+        ctx.getSource().sendSuccess(() -> Component.literal("§7[&6SK-Client§7] Press o to see the logs!"), false);
+
+        boolean successfullyParsed = loadResult.getLog().map(logEntries -> logEntries.stream().noneMatch(logEntry -> logEntry.getType() == LogType.ERROR)).orElse(true);
+        if(successfullyParsed) ctx.getSource().sendSuccess(() -> Component.literal("§7[&6SK-Client§7] Reloaded without any errors!"), false);
+
         return 1;
     }
 

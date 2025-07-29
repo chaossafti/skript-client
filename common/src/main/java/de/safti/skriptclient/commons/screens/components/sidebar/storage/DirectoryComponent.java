@@ -19,7 +19,6 @@ public class DirectoryComponent extends CollapsibleContainer {
     @org.jetbrains.annotations.NotNull
     private final PathNode node;
 
-    // TODO: actual texture before of the title, not just an emoji
     protected DirectoryComponent(@NotNull PathNode pathNode, int depth) {
         super(Sizing.content(), Sizing.content(), Component.literal(pathNode.asFile().getName()), true);
         this.node = pathNode;
