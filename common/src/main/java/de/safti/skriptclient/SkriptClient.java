@@ -1,6 +1,8 @@
 package de.safti.skriptclient;
 
 import de.safti.skriptclient.bridge.Core;
+import de.safti.skriptclient.commons.commands.ModCommand;
+import dev.architectury.event.events.common.CommandRegistrationEvent;
 import io.github.syst3ms.skriptparser.lang.Trigger;
 import io.github.syst3ms.skriptparser.lang.event.SkriptEventManager;
 import io.github.syst3ms.skriptparser.registration.SkriptAddon;
@@ -29,6 +31,12 @@ public class SkriptClient extends SkriptAddon {
         // load the skript parser
 		// this includes loading scripts
 		SkriptParserBootstrap.initSkript(core);
+
+		// register the ModCommand
+		CommandRegistrationEvent.EVENT.register((dispatcher, registry1, selection) -> {
+			ModCommand.register(dispatcher);
+		});
+
 	}
 
 	private SkriptClient() {

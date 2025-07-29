@@ -1,4 +1,4 @@
-package de.safti.skriptclient.screens.components.api;
+package de.safti.skriptclient.commons.screens.components.api;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -12,6 +12,8 @@ public record KeyShortcut(int key, int modifiers, @Nullable Consumer<TextEditorA
         int distance = access.distanceUntil(character -> !Character.isAlphabetic(character) && !Character.isDigit(character));
         access.popAtCursor(distance);
     });
+    public static KeyShortcut ENTER = new KeyShortcut(GLFW.GLFW_KEY_ENTER, 0, access -> access.appendAtCursor("\n"));
+    public static KeyShortcut TAB = new KeyShortcut(GLFW.GLFW_KEY_TAB, 0, access -> access.appendAtCursor("\t"));
 
 
     public boolean matches(int keyCode, int actualModifiers) {

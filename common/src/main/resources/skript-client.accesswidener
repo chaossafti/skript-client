@@ -1,0 +1,5 @@
+accessWidener v2 named
+
+mutable field io/wispforest/owo/ui/component/LabelComponent textRenderer Lnet/minecraft/client/gui/Font;
+accessible field io/wispforest/owo/ui/component/LabelComponent textRenderer Lnet/minecraft/client/gui/Font;
+

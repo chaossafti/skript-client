@@ -1,6 +1,6 @@
 package de.safti.skriptclient.fabric.client;
 
-import de.safti.skriptclient.screens.ScriptManagementScreen;
+import de.safti.skriptclient.commons.screens.ScriptManagementScreen;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientRawInputEvent;
 import net.fabricmc.api.ClientModInitializer;

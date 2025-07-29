@@ -1,4 +1,4 @@
-package de.safti.skriptclient.screens.components.api;
+package de.safti.skriptclient.commons.screens.components.api;
 
 import java.util.function.Predicate;
 

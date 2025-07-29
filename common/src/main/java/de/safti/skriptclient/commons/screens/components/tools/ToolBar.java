@@ -1,12 +1,16 @@
-package de.safti.skriptclient.screens.components.tools;
+package de.safti.skriptclient.commons.screens.components.tools;
 
+import de.safti.skriptclient.commons.screens.ScriptManagementScreen;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 
 public class ToolBar extends FlowLayout {
-    public ToolBar() {
+    private final ScriptManagementScreen screen;
+
+    public ToolBar(ScriptManagementScreen screen) {
         super(Sizing.fixed(50), Sizing.fill(100), Algorithm.VERTICAL);
+        this.screen = screen;
 
         // initial values
         this.gap(4);
@@ -18,4 +22,7 @@ public class ToolBar extends FlowLayout {
 
     }
 
+    public ScriptManagementScreen getScreen() {
+        return screen;
+    }
 }

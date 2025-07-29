@@ -1,4 +1,4 @@
-package de.safti.skriptclient.screens.components.api;
+package de.safti.skriptclient.commons.screens.components.api;
 
 import io.wispforest.owo.ui.base.BaseComponent;
 import io.wispforest.owo.ui.core.OwoUIDrawContext;
@@ -10,14 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditableTextView extends BaseComponent implements TextEditorAccess {
+    private static final Font FONT = Minecraft.getInstance().font;
+    private static final int START_X = 2;
+    private static final int CHAR_COUNT_BUFFER = 3;
+
     private final StringBuilder text = new StringBuilder();
-    private final Font font = Minecraft.getInstance().font;
     private final Map<Long, KeyShortcut> registeredShortcuts = new HashMap<>();
 
     private int cursorPos = 0;
     private int selectionStart, selectionEnd;
-    private boolean cursorVisible = true;
-    private long lastBlink = System.currentTimeMillis();
 
     public EditableTextView(Sizing horizontalSizing, Sizing verticalSizing) {
         this.sizing(horizontalSizing, verticalSizing);
@@ -39,6 +40,8 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
         });
 
         // register default shortcuts
+        registerShortcut(KeyShortcut.ENTER);
+        registerShortcut(KeyShortcut.TAB);
         registerShortcut(KeyShortcut.BACKSPACE);
         registerShortcut(KeyShortcut.CTR_BACKSPACE);
 
@@ -48,68 +51,22 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
         registeredShortcuts.put(shortcut.toLong(), shortcut);
     }
 
+
     @Override
     public boolean canFocus(FocusSource source) {
-        return true;
+        return source == FocusSource.MOUSE_CLICK;
     }
 
     @Override
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
         // create a background square
-        int bgColor = 0xFF1E1F22; // opaque RGB(30,31,34)
-        context.fill(this.x(), this.y(), this.x() + this.width(), this.y() + this.height(), bgColor);
+        //int bgColor = 0xFF1E1F22; // opaque RGB(30,31,34)
+        //context.fill(this.x(), this.y(), this.x() + this.width(), this.y() + this.height(), bgColor);
 
 
-        // fixme: line wrapping not quite working
-        // line wrapping
-        int lineHeight = font.lineHeight;
-        int maxWidth = this.width();
-        int x = this.x();
-        int y = this.y();
+        int width = this.width - FONT.width("a")*CHAR_COUNT_BUFFER;
+        TextDrawer.LINE_WRAPPING.drawTextAndCursor(context, FONT, START_X, x, y, width, height, text.toString());
 
-        int cursorX = x, cursorY = y;
-        int widthAccum = 0;
-
-        for (int i = 0; i < text.length(); i++) {
-            String ch = String.valueOf(text.charAt(i));
-            int charWidth = font.width(ch);
-
-            if (widthAccum + charWidth > maxWidth) {
-                widthAccum = 0;
-                y += lineHeight;
-            }
-
-            if (i == cursorPos) {
-                cursorX = x + widthAccum;
-                cursorY = y;
-            }
-
-            context.drawString(font, ch, x + widthAccum, y, 0xFFFFFF);
-            widthAccum += charWidth;
-        }
-
-        if (cursorPos == text.length()) {
-            if (widthAccum + 1 > maxWidth) {
-                cursorX = x;
-                cursorY = y + lineHeight;
-            } else {
-                cursorX = x + widthAccum;
-                cursorY = y;
-            }
-        }
-
-        // Cursor blinking
-        long now = System.currentTimeMillis();
-        if (now - lastBlink > 500) {
-            cursorVisible = !cursorVisible;
-            lastBlink = now;
-        }
-
-        if (cursorVisible) {
-            cursorX = this.x() + font.width(text.substring(0, Math.min(cursorPos, text.length())));
-            cursorY = this.y();
-            context.fill(cursorX, cursorY, cursorX + 1, cursorY + font.lineHeight, 0xFFFFFFFF);
-        }
     }
 
 
@@ -125,7 +82,7 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
         int lines = 1;
 
         for (int i = 0; i < text.length(); i++) {
-            int charWidth = font.width(String.valueOf(text.charAt(i)));
+            int charWidth = FONT.width(String.valueOf(text.charAt(i)));
             if (widthAccum + charWidth > maxWidth) {
                 lines++;
                 widthAccum = 0;
@@ -133,7 +90,7 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
             widthAccum += charWidth;
         }
 
-        return lines * font.lineHeight;
+        return lines * FONT.lineHeight;
     }
 
     public String getText() {
