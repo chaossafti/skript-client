@@ -1,5 +1,6 @@
 package de.safti.skriptclient.commons.screens.components.sidebar.storage;
 
+import de.safti.skriptclient.commons.screens.ScriptManagementScreen;
 import de.safti.skriptclient.commons.screens.components.sidebar.Sidebar;
 import io.wispforest.owo.ui.core.Surface;
 
@@ -10,13 +11,14 @@ public class StorageSidebar extends Sidebar {
     private final Path rootPath;
     private final FileTree tree;
 
-    public StorageSidebar(Path rootPath) {
+    public StorageSidebar(ScriptManagementScreen screen, Path rootPath) {
         if(!rootPath.toFile().isDirectory()) {
             throw new IllegalArgumentException("Did not provide a directory as root path!");
         }
 
         this.rootPath = rootPath;
-        tree = new FileTree(rootPath, this);
+        tree = new FileTree(screen, rootPath, this);
+        allowOverflow(true); // TODO: remove
         tree.getRootNode().render(1);
 
 

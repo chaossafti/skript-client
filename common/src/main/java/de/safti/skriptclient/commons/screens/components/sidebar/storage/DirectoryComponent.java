@@ -1,7 +1,8 @@
 package de.safti.skriptclient.commons.screens.components.sidebar.storage;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import de.safti.skriptclient.commons.screens.components.api.DynamicLabelComponent;
+import de.safti.skriptclient.commons.screens.components.api.ScalableLabelComponent;
 import de.safti.skriptclient.utils.OwoUIUtils;
 import io.wispforest.owo.ui.container.CollapsibleContainer;
 import io.wispforest.owo.ui.container.Containers;
@@ -18,6 +19,7 @@ public class DirectoryComponent extends CollapsibleContainer {
 
     @org.jetbrains.annotations.NotNull
     private final PathNode node;
+    private final SpinnyBoiComponent spinnyBoiV2;
 
     protected DirectoryComponent(@NotNull PathNode pathNode, int depth) {
         super(Sizing.content(), Sizing.content(), Component.literal(pathNode.asFile().getName()), true);
@@ -31,15 +33,17 @@ public class DirectoryComponent extends CollapsibleContainer {
         padding(Insets.of(0, 0, depth * 2, 0));
 
         FlowLayout titlePersonalLayout = Containers.horizontalFlow(Sizing.content(), Sizing.content());
-        DynamicLabelComponent title = new DynamicLabelComponent(Component.literal(pathNode.asFile().getName()), 0.3f);
+        ScalableLabelComponent title = new ScalableLabelComponent(Component.literal(pathNode.asFile().getName()), 0.5f);
         titlePersonalLayout.child(title);
 
         // hover/unhover effect
         OwoUIUtils.hoverEffect(title, titlePersonalLayout);
 
-        SpinnyBoiComponent spinnyBoiV2 = new SpinnyBoiComponent(0.3f);
+        spinnyBoiV2 = new SpinnyBoiComponent(0.5f);
         spinnyBoiV2.targetRotation = expanded ? 90 : 0;
         spinnyBoiV2.rotation = spinnyBoiV2.targetRotation;
+
+        this.contentLayout.allowOverflow(true);
 
 
         titleLayout.clearChildren();
@@ -49,18 +53,28 @@ public class DirectoryComponent extends CollapsibleContainer {
         titleLayout.child(titlePersonalLayout);
     }
 
+    @Override
+    public void toggleExpansion() {
+        if (expanded) {
+            this.spinnyBoiV2.targetRotation = 0;
+        } else {
+            this.spinnyBoiV2.targetRotation = 90;
+        }
+        super.toggleExpansion();
+    }
+
     public @NotNull PathNode getNode() {
         return node;
     }
 
-    protected static class SpinnyBoiComponent extends DynamicLabelComponent {
+    protected static class SpinnyBoiComponent extends ScalableLabelComponent {
 
         protected float rotation = 90;
         protected float targetRotation = 90;
 
         public SpinnyBoiComponent(float fontScale) {
             super(net.minecraft.network.chat.Component.literal(">"), fontScale);
-            this.margins(Insets.of(0, 0, 5, 10));
+            this.margins(Insets.of(0, 2, 1, 3));
             this.cursorStyle(CursorStyle.HAND);
         }
 
@@ -71,27 +85,8 @@ public class DirectoryComponent extends CollapsibleContainer {
         }
 
         @Override
-        public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
-            var matrices = context.pose();
-
-            int x = this.x;
-            int y = this.y;
-
-            matrices.pushPose();
-
-            double centerX = this.x + this.width / 2f - 1;
-            double centerY = this.y + this.height / 2f - 1;
-
-
-            matrices.translate(centerX, centerY, 0);
-            matrices.scale(fontScale, fontScale, 1f);
+        protected void changeMatrices(PoseStack matrices) {
             matrices.mulPose(Axis.ZP.rotationDegrees(this.rotation));
-            matrices.translate(-centerX, -centerY, 0);
-
-
-            context.drawString(this.textRenderer, text, x, y + height, this.color.get().argb(), this.shadow);
-            matrices.popPose();
-
         }
     }
 

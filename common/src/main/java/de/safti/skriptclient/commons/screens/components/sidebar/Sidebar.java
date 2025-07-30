@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class Sidebar extends FlowLayout {
 
     public Sidebar() {
-        super(Sizing.fill(30), Sizing.fill(), Algorithm.VERTICAL);
+        super(Sizing.content(10), Sizing.fill(), Algorithm.VERTICAL);
     }
 
     public Sidebar(Sizing horizontal, Sizing vertical) {

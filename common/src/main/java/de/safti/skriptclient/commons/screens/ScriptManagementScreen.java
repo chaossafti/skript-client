@@ -15,9 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
 public class ScriptManagementScreen extends BaseOwoScreen<FlowLayout> {
     private static final Logger log = LoggerFactory.getLogger(ScriptManagementScreen.class);
     @Nullable
@@ -69,19 +66,8 @@ public class ScriptManagementScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     public void addTab(@NotNull TabWidget tabWidget) {
-        tabContainer.child(tabWidget);
-
-        // by default, select this tab automatically
-        try {
-            String fileContent = Files.readString(tabWidget.getPath());
-            if(!mainScreenLayout.children().isEmpty() && mainScreenLayout.children().getFirst() instanceof AbstractMainArea mainScreenArea) {
-                mainScreenArea.onTabChange(tabWidget);
-            }
-
-        } catch (IOException e) {
-            log.error("Failed to read content of {}", tabWidget.getPath(), e);
-            throw new RuntimeException(e);
-        }
+        tabContainer.updateScreen(this);
+        tabContainer.addTabWidget(tabWidget);
     }
 
     public void setSideBar(@Nullable Sidebar sideBar) {
@@ -95,9 +81,10 @@ public class ScriptManagementScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     public void setMainArea(AbstractMainArea mainArea) {
-        mainScreenLayout
-                .clearChildren()
-                .child(mainArea);
+        mainScreenLayout.clearChildren();
+        if(mainArea != null) {
+            mainScreenLayout.child(mainArea);
+        }
     }
 
 

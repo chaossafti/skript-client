@@ -22,7 +22,7 @@ public class LogsSidebar extends Sidebar {
     private ScrollContainer<FlowLayout> scrollContainer;
 
     public LogsSidebar(ScriptManagementScreen screen) {
-        super(Sizing.content(10), Sizing.expand());
+        super();
         var logs = StoringLogRecipient.INSTANCE.getLogs();
 
         // configuration

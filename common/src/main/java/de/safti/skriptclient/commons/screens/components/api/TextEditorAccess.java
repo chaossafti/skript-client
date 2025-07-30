@@ -10,9 +10,13 @@ public interface TextEditorAccess {
 
     void setSelection(int start, int end);
 
-    int getCursorPosition();
+    int getCaretPosition();
 
-    void setCursorPosition(int pos);
+    void setCaretPosition(int pos);
+
+    default void moveCaret(int offset) {
+        setCaretPosition(Math.clamp(getCaretPosition() + offset, 0, getContent().length()));
+    }
 
 
     StringBuilder getContent();
@@ -22,89 +26,79 @@ public interface TextEditorAccess {
     }
 
     default void appendAtCursor(String str) {
-        int cursorPos = getCursorPosition();
+        int cursorPos = getCaretPosition();
 
         getContent().insert(cursorPos, str);
-        setCursorPosition(cursorPos + str.length());
+        setCaretPosition(cursorPos + str.length());
     }
 
     void setAll(String str);
 
     default void popCharAtCursor() {
-        int pos = getCursorPosition() - 1;
+        int pos = getCaretPosition() - 1;
         if (pos < getContent().length() && pos >= 0) {
             getContent().deleteCharAt(pos);
-            setCursorPosition(pos);
+            setCaretPosition(pos);
         }
     }
 
     default void popAtCursor(int amount) {
-        int cursorPos = getCursorPosition();
+        int cursorPos = getCaretPosition();
         StringBuilder text = getContent();
 
-        if (cursorPos < 0 || cursorPos > text.length()) {
-            throw new IllegalArgumentException("Invalid cursor position");
-        }
+        if (amount <= 0 || cursorPos < amount || cursorPos > text.length()) return;
 
-        // Start from cursor position and expand outward
-        int left = cursorPos;
-        int right = cursorPos;
-
-        // Keep track of positions to remove
-        boolean[] positionsToRemove = new boolean[text.length()];
-
-        // Expand left until we hit a non-alphanumeric character
-        while (left > 0 && Character.isLetterOrDigit(text.charAt(left - 1))) {
-            positionsToRemove[left - 1] = true;
-            left--;
-        }
-
-        // Add current position if alphanumeric
-        if (cursorPos < text.length() && Character.isLetterOrDigit(text.charAt(cursorPos))) {
-            positionsToRemove[cursorPos] = true;
-        }
-
-        // Expand right until we hit a non-alphanumeric character
-        while (right < text.length() - 1 && Character.isLetterOrDigit(text.charAt(right + 1))) {
-            positionsToRemove[right + 1] = true;
-            right++;
-        }
-
-        // Remove characters at marked positions
-        int offset = 0;
-        for (int i = 0; i < text.length(); i++) {
-            if (!positionsToRemove[i]) {
-                text.setCharAt(i - offset, text.charAt(i));
-            } else {
-                offset++;
-            }
-        }
-
-        // Trim the StringBuilder to remove trailing characters
-        text.delete(text.length() - offset, text.length());
-        setCursorPosition(Math.min(Math.max(0, cursorPos - offset), text.length()));
+        text.delete(cursorPos - amount, cursorPos);
+        setCaretPosition(cursorPos - amount);
     }
 
 
+    /**
+     * Calculates the distance from the current caret position to the first character (searching **leftward**)
+     * that matches the given predicate.
+     *
+     * @param checker the predicate to test each character
+     * @return the number of characters to move left until a match is found. If no match, returns caret position (i.e. jump to start)
+     */
     default int distanceUntil(Predicate<Character> checker) {
-        StringBuilder content = getContent() ;
-        int cursorPos = getCursorPosition() - 1;
+        StringBuilder content = getContent();
+        int cursorPos = getCaretPosition();
 
-        for (int i = cursorPos; i >= 0; i--) {
+        for (int i = cursorPos - 1; i >= 0; i--) {
             if (checker.test(content.charAt(i))) {
-                return i;
+                return cursorPos - i - 1;
             }
         }
 
-        for (int pos = cursorPos; pos >= 0; pos--) {
-            if(checker.test(content.charAt(pos))) {
-                return cursorPos - pos;
-            }
-        }
-
-
+        // Nothing matched: return distance to beginning
         return cursorPos;
     }
+
+    /**
+     * Calculates the distance from the current caret position to the next character (searching **rightward**)
+     * that matches the given predicate.
+     *
+     * @param checker the predicate to test each character
+     * @return the number of characters to move right until a match is found. If no match, returns distance to end
+     */
+    default int distanceUntilForward(Predicate<Character> checker) {
+        StringBuilder content = getContent();
+        int cursorPos = getCaretPosition();
+
+        for (int i = cursorPos; i < content.length(); i++) {
+            if (checker.test(content.charAt(i))) {
+                return i - cursorPos;
+            }
+        }
+
+        // Nothing matched: jump to end
+        return content.length() - cursorPos;
+    }
+
+
+    long lastBlink();
+
+    void setLastBlink(long time);
 
 
 }

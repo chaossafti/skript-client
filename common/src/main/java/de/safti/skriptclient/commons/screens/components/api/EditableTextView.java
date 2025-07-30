@@ -19,6 +19,7 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
 
     private int cursorPos = 0;
     private int selectionStart, selectionEnd;
+    private long lastBlink;
 
     public EditableTextView(Sizing horizontalSizing, Sizing verticalSizing) {
         this.sizing(horizontalSizing, verticalSizing);
@@ -43,7 +44,13 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
         registerShortcut(KeyShortcut.ENTER);
         registerShortcut(KeyShortcut.TAB);
         registerShortcut(KeyShortcut.BACKSPACE);
-        registerShortcut(KeyShortcut.CTR_BACKSPACE);
+        registerShortcut(KeyShortcut.CTRL_BACKSPACE);
+        registerShortcut(KeyShortcut.LEFT_ARROW);
+        registerShortcut(KeyShortcut.RIGHT_ARROW);
+        registerShortcut(KeyShortcut.DOWN_ARROW);
+        registerShortcut(KeyShortcut.UP_ARROW);
+        registerShortcut(KeyShortcut.CTRL_RIGHT);
+        registerShortcut(KeyShortcut.CTRL_LEFT);
 
     }
 
@@ -65,7 +72,8 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
 
 
         int width = this.width - FONT.width("a")*CHAR_COUNT_BUFFER;
-        TextDrawer.LINE_WRAPPING.drawTextAndCursor(context, FONT, START_X, x, y, width, height, text.toString());
+        TextDrawer.LINE_WRAPPING.drawTextAndCursor(context, FONT, START_X, x, y, width, height, this);
+
 
     }
 
@@ -121,12 +129,12 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
     }
 
     @Override
-    public int getCursorPosition() {
+    public int getCaretPosition() {
         return cursorPos;
     }
 
     @Override
-    public void setCursorPosition(int pos) {
+    public void setCaretPosition(int pos) {
         cursorPos = pos;
     }
 
@@ -139,5 +147,15 @@ public class EditableTextView extends BaseComponent implements TextEditorAccess 
     public void setAll(String str) {
         text.setLength(0);
         text.append(str);
+    }
+
+    @Override
+    public long lastBlink() {
+        return lastBlink;
+    }
+
+    @Override
+    public void setLastBlink(long time) {
+        this.lastBlink = time;
     }
 }

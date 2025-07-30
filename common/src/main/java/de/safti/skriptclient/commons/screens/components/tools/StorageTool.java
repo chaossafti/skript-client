@@ -10,22 +10,19 @@ import org.lwjgl.glfw.GLFW;
 
 public class StorageTool extends ToolWidget {
     private static final ResourceLocation STORAGE_TOOL_IMG = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/item/chest_minecart.png");
-    private final StorageSidebar storageSidebar = new StorageSidebar(SkriptClient.CORE.getScriptsFolder());
+    private final StorageSidebar storageSidebar
+            ;
 
     public StorageTool(ToolBar toolBar) {
         super(toolBar, STORAGE_TOOL_IMG, Component.literal("file explorer"));
 
+        storageSidebar = new StorageSidebar(getScreen(), SkriptClient.CORE.getScriptsFolder());
         mouseDown().subscribe((mouseX, mouseY, button) -> {
-           if(button != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
-           if(getScreen().getSideBar() == storageSidebar) {
-               getScreen().setSideBar(null);
-               return true;
-           }
-
-            LocalPlayer player = Minecraft.getInstance().player;
-           if(player != null) {
-               player.sendSystemMessage(Component.literal("I'm not competent enough to make a working script editor. Please use an external editor!"));
-           }
+            if(button != GLFW.GLFW_MOUSE_BUTTON_LEFT) return false;
+            if(getScreen().getSideBar() == storageSidebar) {
+                getScreen().setSideBar(null);
+                return true;
+            } else getScreen().setSideBar(storageSidebar);
 
             return true;
         });

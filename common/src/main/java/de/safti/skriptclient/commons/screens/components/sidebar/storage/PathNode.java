@@ -1,5 +1,6 @@
 package de.safti.skriptclient.commons.screens.components.sidebar.storage;
 
+import de.safti.skriptclient.commons.screens.ScriptManagementScreen;
 import io.wispforest.owo.ui.container.FlowLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,18 +24,18 @@ public final class PathNode {
     private final FlowLayout parentLayout;
     private final FlowLayout content;
 
-    public PathNode(Path path, @NotNull FlowLayout parentLayout, int depth) {
+    public PathNode(ScriptManagementScreen screen, Path path, @NotNull FlowLayout parentLayout, int depth) {
         this.path = path;
         this.parentLayout = parentLayout;
-        content = isDirectory() ? new DirectoryComponent(this, depth) : new FileComponent(this, depth);
+        content = isDirectory() ? new DirectoryComponent(this, depth) : new FileComponent(screen, this, depth);
         content.id("content");
-        this.children = Files.isDirectory(path) ? collectChildren(path, depth) : new HashSet<>();
+        this.children = Files.isDirectory(path) ? collectChildren(screen, path, depth) : new HashSet<>();
     }
 
-    private Set<PathNode> collectChildren(Path path, int depth) {
+    private Set<PathNode> collectChildren(ScriptManagementScreen screen, Path path, int depth) {
         Set<PathNode> result = new HashSet<>();
         try(var stream = Files.list(path)) {
-            stream.forEach(p -> result.add(new PathNode(p, content, depth+1)));
+            stream.forEach(p -> result.add(new PathNode(screen, p, content, depth+1)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,6 +65,7 @@ public final class PathNode {
 
     public void render(int depth) {
         parentLayout.child(content);
+        content.allowOverflow(true);
         if(children == null) return;
         streamChildren()
                 .sorted(PATH_NODE_COMPARATOR)
