@@ -25,7 +25,7 @@ public interface TextEditorAccess {
         getContent().append(str);
     }
 
-    default void appendAtCursor(String str) {
+    default void appendAtCaret(String str) {
         int cursorPos = getCaretPosition();
 
         getContent().insert(cursorPos, str);

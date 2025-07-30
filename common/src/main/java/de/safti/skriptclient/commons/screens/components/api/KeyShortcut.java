@@ -28,8 +28,8 @@ public record KeyShortcut(int key, int modifiers, @Nullable Consumer<TextEditorA
         int distance = caret - (pos + 1);
         access.popAtCursor(distance);
     });
-    public static final KeyShortcut ENTER = new KeyShortcut(GLFW.GLFW_KEY_ENTER, 0, access -> access.appendAtCursor("\n"));
-    public static final KeyShortcut TAB = new KeyShortcut(GLFW.GLFW_KEY_TAB, 0, access -> access.appendAtCursor("\t"));
+    public static final KeyShortcut ENTER = new KeyShortcut(GLFW.GLFW_KEY_ENTER, 0, access -> access.appendAtCaret("\n"));
+    public static final KeyShortcut TAB = new KeyShortcut(GLFW.GLFW_KEY_TAB, 0, access -> access.appendAtCaret("\t"));
 
     public static final KeyShortcut RIGHT_ARROW = new KeyShortcut(GLFW.GLFW_KEY_RIGHT, 0, access -> {
         access.moveCaret(1);
